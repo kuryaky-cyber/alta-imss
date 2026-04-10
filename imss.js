@@ -4,7 +4,7 @@
    ANTES DE SUBIR reemplaza:
    TU_WEBHOOK_IMSS -> URL del escenario IMSS en Make
 */
-var WEBHOOK_IMSS = 'https://hook.us2.make.com/TU_WEBHOOK_IMSS';
+var WEBHOOK_IMSS = 'https://hook.us2.make.com/x36egy1yjz501hcinnfavgdq8c1ci6uh';
 
 var paso = 1;
 var movimiento = '';
