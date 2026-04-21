@@ -1,250 +1,511 @@
-/* IMSS Movimientos Afiliatorios - Accepti Contadores
-   imss.js v2.0 - 5 pasos con datos del patron
-
-   ANTES DE SUBIR reemplaza:
-   TU_WEBHOOK_IMSS -> URL del escenario IMSS en Make
-*/
-var WEBHOOK_IMSS = 'https://hook.us2.make.com/x36egy1yjz501hcinnfavgdq8c1ci6uhS';
-
-var paso = 1;
-var movimiento = '';
-
-var CAMPOS = {
-  alta:      ['f-nss','f-nombre','f-curp','f-rfc','f-nacimiento','f-sexo','f-umf',
-               'f-salario','f-tipo-sal','f-tipo-trab','f-jornada','f-depto','f-puesto','f-cp'],
-  reingreso: ['f-nss','f-nombre','f-curp','f-rfc',
-               'f-salario','f-tipo-sal','f-tipo-trab','f-jornada','f-depto','f-puesto'],
-  baja:      ['f-nss','f-nombre-simple','f-motivo-baja'],
-  salario:   ['f-nss','f-nombre-simple','f-salario','f-tipo-sal']
-};
-
-var PLAZO = {
-  alta:      '5 dias habiles desde el inicio de labores del trabajador.',
-  reingreso: '5 dias habiles desde el reingreso a actividades.',
-  baja:      '5 dias habiles desde la terminacion de la relacion laboral.',
-  salario:   'Salario fijo: 5 dias habiles. Salario variable: primeros 5 dias de meses nones.'
-};
-
-var HINT_FECHA = {
-  alta:      'Fecha de inicio de labores del trabajador',
-  reingreso: 'Fecha de reingreso a actividades',
-  baja:      'Ultimo dia laborado (por el que se pago salario)',
-  salario:   'Fecha en que entra en vigor el nuevo salario'
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-  // Logo fallback
-  var img = document.getElementById('logo-img');
-  if (img) { img.onerror = function() { img.style.display='none'; document.getElementById('logo-fallback').style.display='grid'; }; }
-
-  // Seleccion de movimiento con event delegation
-  document.querySelector('.mov-grid').addEventListener('click', function(e) {
-    var card = e.target.closest('.mov-card');
-    if (!card) return;
-    var tipo = card.id.replace('mov-', '');
-    selMov(tipo);
-  });
-
-  // Navegacion
-  document.getElementById('btn-next-1').addEventListener('click', function() { goNext(1); });
-  document.getElementById('btn-next-2').addEventListener('click', function() { goNext(2); });
-  document.getElementById('btn-next-3').addEventListener('click', function() { goNext(3); });
-  document.getElementById('btn-next-4').addEventListener('click', function() { goNext(4); });
-  document.getElementById('btn-prev-2').addEventListener('click', function() { goPrev(2); });
-  document.getElementById('btn-prev-3').addEventListener('click', function() { goPrev(3); });
-  document.getElementById('btn-prev-4').addEventListener('click', function() { goPrev(4); });
-  document.getElementById('btn-prev-5').addEventListener('click', function() { goPrev(5); });
-  document.getElementById('btn-enviar').addEventListener('click', function() { enviar(); });
-
-  // Validacion en tiempo real
-  document.getElementById('reg_patronal').addEventListener('input', function() { this.value=this.value.toUpperCase(); clrE('reg_patronal'); });
-  document.getElementById('nombre_patron').addEventListener('input', function() { clrE('nombre_patron'); });
-  document.getElementById('rfc_patron').addEventListener('input', function() { this.value=this.value.toUpperCase(); });
-  document.getElementById('email').addEventListener('input', function() { clrE('email'); });
-  document.getElementById('nss').addEventListener('input', function() { clrE('nss'); });
-  document.getElementById('nombre').addEventListener('input', function() { clrE('nombre'); });
-  document.getElementById('curp').addEventListener('input', function() { this.value=this.value.toUpperCase(); clrE('curp'); });
-  document.getElementById('rfc').addEventListener('input', function() { this.value=this.value.toUpperCase(); });
-  document.getElementById('nacimiento').addEventListener('input', function() { clrE('nacimiento'); });
-  document.getElementById('fecha_mov').addEventListener('input', function() { clrE('fecha_mov'); });
-  document.getElementById('motivo_baja').addEventListener('change', function() { clrE('motivo_baja'); });
-  document.getElementById('salario').addEventListener('input', function() { clrE('salario'); });
-});
-
-function selMov(tipo) {
-  movimiento = tipo;
-  var tipos = ['alta','reingreso','baja','salario'];
-  for (var i=0; i<tipos.length; i++) {
-    var card = document.getElementById('mov-' + tipos[i]);
-    var badge = document.getElementById('badge-' + tipos[i]);
-    card.classList.remove('selected');
-    badge.textContent = '';
-  }
-  document.getElementById('mov-' + tipo).classList.add('selected');
-  document.getElementById('badge-' + tipo).textContent = '\u2713';
-  var alert = document.getElementById('plazo-alert');
-  document.getElementById('plazo-txt').textContent = 'Plazo: ' + (PLAZO[tipo] || '');
-  alert.classList.add('show');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de CFDI — Accepti Contadores</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#00A99D;--teal2:#007F76;--coral:#F15A29;--navy:#0D2B5E;--blue:#1E4FA0;--ink:#1A1A2E;--muted:#6B7280;--lite:#F0FAF9;--bg:#F7F8FC;--white:#FFFFFF;--border:#E2E8F0;--field:#FAFBFF;--red:#DC2626;--green:#16A34A;--yellow:#F59E0B}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px}
+.topbar{background:var(--navy);padding:7px 32px;display:flex;justify-content:space-between;align-items:center}
+.topbar span{font-size:12px;color:rgba(255,255,255,.55)}
+.topbar a{font-size:12px;color:var(--teal);text-decoration:none;font-weight:600}
+header{background:var(--white);border-bottom:3px solid var(--teal);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:68px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand img{width:44px;height:44px;object-fit:contain;border-radius:8px;flex-shrink:0}
+.bico{width:44px;height:44px;display:none;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.bico span{display:block}
+.bc1{background:#00A99D}.bc2{background:#F15A29}.bc3{background:#1E4FA0}.bc4{background:#F7C31A}
+.bname{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;color:var(--navy);line-height:1}
+.bname em{color:var(--teal);font-style:normal}
+.bsub{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+.hright{text-align:right;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.hright strong{color:var(--navy)}
+.hright a{color:var(--teal);text-decoration:none}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 60%,var(--teal2) 100%);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hero h2{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;color:#fff}
+.hero p{font-size:13px;color:rgba(255,255,255,.65);margin-top:3px}
+.cpill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:4px;letter-spacing:1px;white-space:nowrap}
+.stepbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;gap:6px;overflow-x:auto}
+.sb{display:flex;align-items:center;gap:6px}
+.snum{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;transition:all .2s}
+.snum.active{background:var(--teal);color:#fff}
+.snum.done{background:var(--teal2);color:#fff}
+.slabel{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.slabel.active,.slabel.done{color:var(--teal2)}
+.sarrow{color:var(--border);font-size:16px}
+.wrapper{max-width:820px;margin:28px auto 0;padding:0 18px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.05);display:none;overflow:hidden}
+.card.active{display:block;animation:fadeup .3s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chead{background:linear-gradient(90deg,var(--lite),var(--white) 70%);border-bottom:1px solid var(--border);padding:18px 26px;display:flex;align-items:center;gap:13px}
+.cico{width:38px;height:38px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.chead h2{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px}
+.chead p{font-size:12px;color:var(--muted);margin-top:2px}
+.fields{padding:22px 26px;display:grid;grid-template-columns:1fr 1fr;gap:16px 20px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f.full{grid-column:1/-1}
+.f.hide{display:none!important}
+label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.5px}
+.r{color:var(--coral)}
+input,select,textarea{background:var(--field);border:1.5px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'Lato',sans-serif;font-size:14px;color:var(--ink);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,169,157,.1)}
+input.err,select.err{border-color:var(--red)!important}
+input::placeholder,textarea::placeholder{color:#C5D0DC;font-style:italic}
+select{cursor:pointer}
+.hint{font-size:11px;color:var(--muted)}
+.hint-link{font-size:11px;color:var(--teal);text-decoration:underline;cursor:pointer}
+.emsg{font-size:11px;color:var(--red);display:none;font-weight:600}
+.pfx{display:flex;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;background:var(--field);transition:border-color .2s,box-shadow .2s}
+.pfx:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,169,157,.1)}
+.pfx.err{border-color:var(--red)!important}
+.pfxl{padding:10px 11px;background:var(--lite);border-right:1.5px solid var(--border);font-size:13px;color:var(--teal2);font-weight:700;white-space:nowrap}
+.pfx input{border:none;border-radius:0;background:transparent;box-shadow:none}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pr{display:none}
+.pl{padding:7px 14px;border-radius:4px;border:1.5px solid var(--border);font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .2s;color:var(--muted);user-select:none}
+.pr:checked+.pl{background:var(--teal);border-color:var(--teal);color:#fff}
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 26px;max-width:520px}
+.tipo-card{border:2px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s;display:flex;gap:12px;align-items:flex-start;background:var(--field)}
+.tipo-card:hover{border-color:var(--teal);background:var(--lite)}
+.tipo-card.sel{border-color:var(--teal);background:var(--lite);box-shadow:0 0 0 3px rgba(0,169,157,.1)}
+.tipo-ico{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.tc-factura .tipo-ico{background:#EDF4FF;color:var(--blue)}
+.tc-pago    .tipo-ico{background:#EDFFF5;color:var(--green)}
+.tipo-t{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy)}
+.tipo-d{font-size:11px;color:var(--muted);margin-top:3px}
+.tipo-chk{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);margin-left:auto;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s}
+.tipo-card.sel .tipo-chk{background:var(--teal);border-color:var(--teal);color:#fff}
+.concs{padding:0 26px 14px}
+.conc{background:var(--field);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;animation:fadeup .25s ease}
+.chead2{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cnum{background:var(--teal);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px}
+.cdesc-wrap{flex:1}
+.cdesc-wrap input{width:100%}
+.btnrm{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);color:var(--red);border-radius:5px;padding:5px 10px;cursor:pointer;font-size:14px;line-height:1}
+.satwrap{position:relative}
+.satinput{padding-left:34px!important}
+.satico{position:absolute;left:11px;top:11px;font-size:14px;pointer-events:none}
+.satdrop{position:absolute;top:100%;left:0;right:0;background:var(--white);border:1.5px solid var(--teal);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;z-index:500;display:none;box-shadow:0 8px 20px rgba(0,0,0,.1)}
+.satdrop.open{display:block}
+.satitem{padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:baseline;transition:background .1s}
+.satitem:hover{background:var(--lite)}
+.satitem:last-child{border-bottom:none}
+.satcode{font-family:monospace;font-size:11px;color:var(--teal2);font-weight:700;background:var(--lite);padding:2px 5px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.satcat{font-size:10px;color:var(--muted)}
+.satmanual{display:flex;align-items:center;gap:8px;background:var(--field);border:1.5px solid var(--border);border-top:none;border-radius:0 0 6px 6px;padding:6px 12px}
+.satmanual span{font-size:11px;color:var(--muted);white-space:nowrap}
+.satmanual input{flex:1;max-width:130px;border:none;background:transparent;font-size:13px;font-family:monospace;padding:4px;outline:none}
+.satsel{display:none;margin-top:5px;padding:7px 11px;background:var(--lite);border:1px solid var(--teal);border-radius:6px;font-size:12px;color:var(--teal2);align-items:center;gap:8px}
+.satsel.show{display:flex}
+.satsel strong{font-family:monospace;font-weight:700}
+.satclr{margin-left:auto;cursor:pointer;color:var(--muted);font-size:16px;background:none;border:none;padding:0 3px}
+.nores{padding:10px 14px;font-size:12px;color:var(--muted);font-style:italic;text-align:center}
+.sat-catalogo-link{display:inline-block;margin-top:6px;font-size:11px;color:var(--teal);text-decoration:underline;cursor:pointer}
+.cgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px}
+.cgrid .f label{font-size:10px}
+.cgrid input,.cgrid select{padding:8px 10px;font-size:13px}
+.cgrid .pfxl{padding:8px 9px;font-size:12px}
+.btnadd{display:block;width:100%;background:transparent;border:2px dashed var(--teal);color:var(--teal2);border-radius:8px;padding:10px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.btnadd:hover{background:var(--lite)}
+.totbox{margin:0 26px 20px;background:var(--navy);border-radius:8px;padding:14px 18px;color:#fff}
+.trow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:rgba(255,255,255,.6)}
+.trow span:last-child{color:rgba(255,255,255,.9);font-weight:500}
+.trow.grand{border-top:1px solid rgba(255,255,255,.15);margin-top:8px;padding-top:10px;font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--teal)}
+.trow.grand span:last-child{color:#fff;font-size:19px}
+.totbox .hint{color:rgba(255,255,255,.4);font-size:11px;margin-top:8px}
+.resgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:18px 26px}
+.ri{background:var(--field);border:1px solid var(--border);border-radius:6px;padding:11px 14px}
+.ri.full{grid-column:1/-1}
+.ril{font-family:'Montserrat',sans-serif;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.riv{font-size:14px;font-weight:500;color:var(--navy)}
+.riv.big{color:var(--teal2);font-size:17px;font-weight:700}
+.checksec{padding:0 26px 18px;display:flex;align-items:flex-start;gap:10px}
+.checksec input[type=checkbox]{width:16px;height:16px;margin-top:3px;flex-shrink:0;accent-color:var(--teal)}
+.checksec label{font-size:12px;color:var(--muted);font-family:'Lato',sans-serif;text-transform:none;letter-spacing:0;font-weight:400}
+.checksec a{color:var(--teal2)}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 20px;border-top:1px solid var(--border)}
+.stepof{font-size:12px;color:var(--muted);font-style:italic}
+.btn{padding:11px 24px;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:none;text-transform:uppercase;letter-spacing:.5px}
+.btnp{background:var(--teal);color:#fff}
+.btnp:hover{background:var(--teal2);transform:translateY(-1px)}
+.btnb{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btnb:hover{background:var(--bg)}
+.btns{background:var(--coral);color:#fff;padding:11px 32px}
+.btns:hover{background:#d14820;transform:translateY(-1px)}
+.success{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:48px 36px;text-align:center;display:none}
+.success.active{display:block;animation:fadeup .5s ease}
+.sucico{width:68px;height:68px;background:rgba(0,169,157,.1);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px}
+.success h2{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.success p{font-size:14px;color:var(--muted);max-width:420px;margin:0 auto 14px}
+.folio{display:inline-block;background:var(--lite);border:2px solid var(--teal);border-radius:6px;padding:9px 26px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--teal2);letter-spacing:3px;margin-bottom:20px}
+.nxtlist{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 18px;text-align:left;max-width:400px;margin:0 auto 18px}
+.nxtlist h3{font-family:'Montserrat',sans-serif;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.nxtlist li{font-size:13px;list-style:none;padding:4px 0;display:flex;gap:8px}
+.nxtlist .dot{color:var(--teal);font-weight:700}
+footer{background:var(--navy);color:rgba(255,255,255,.4);text-align:center;padding:13px;font-size:11px;margin-top:36px}
+footer a{color:var(--teal);text-decoration:none}
+.sec-info{background:var(--lite);border:1px solid rgba(0,169,157,.2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--muted)}
+.sec-info strong{color:var(--teal2)}
+.divline{grid-column:1/-1;border-top:1.5px dashed var(--border);margin:4px 0}
+.sec-title{grid-column:1/-1;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;padding:4px 0 0}
+@media(max-width:600px){
+.topbar,header,.hero{padding:10px 16px}
+.stepbar{padding:12px 16px}
+.fields{grid-template-columns:1fr;padding:14px 16px}
+.f.full{grid-column:1}
+.tipo-grid{grid-template-columns:1fr;padding:14px 16px}
+.chead,.nav{padding:14px 16px}
+.concs{padding:0 14px 12px}
+.totbox{margin:0 14px 16px}
+.resgrid{grid-template-columns:1fr;padding:14px 16px}
+.checksec{padding:0 14px 14px}
+.cgrid{grid-template-columns:1fr 1fr}
+.hright{display:none}
 }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span>Privada 14B Sur 6703, Villa Universitaria, Puebla &middot; (222) 755-0328</span>
+  <a href="https://www.accepti.com.mx" target="_blank">accepti.com.mx</a>
+</div>
+<header>
+  <a class="brand" href="https://www.accepti.com.mx" target="_blank">
+    <img id="logo-img" src="https://static.wixstatic.com/media/dca6eb_24aec97af69f477e97f2dd5bb2d615fe~mv2.png/v1/fill/w_80,h_80,al_c,q_85,enc_avif,quality_auto/ICONO%20COLORES-05.png" alt="Accepti" width="44" height="44">
+    <div class="bico" id="logo-fb"><span class="bc1"></span><span class="bc2"></span><span class="bc3"></span><span class="bc4"></span></div>
+    <div><div class="bname">ACCEPT<em>I</em></div><div class="bsub">Contadores S.C.</div></div>
+  </a>
+  <div class="hright">
+    <span>WhatsApp <strong>(222) 864-2948</strong></span>
+    <a href="https://www.accepti.com.mx" target="_blank">contabilidad arroba accepti.com.mx</a>
+  </div>
+</header>
+<div class="hero">
+  <div>
+    <h2>Solicitud de Comprobante Fiscal (CFDI 4.0)</h2>
+    <p>Factura de Ingreso &middot; Complemento de Pago</p>
+  </div>
+  <div class="cpill">SAT &middot; CFDI 4.0</div>
+</div>
 
-function aplicarCampos() {
-  var todos = ['f-nss','f-nombre','f-nombre-simple','f-curp','f-rfc','f-nacimiento',
-               'f-sexo','f-umf','f-motivo-baja','f-salario','f-tipo-sal',
-               'f-tipo-trab','f-jornada','f-depto','f-puesto','f-cp'];
-  for (var i=0; i<todos.length; i++) {
-    var el = document.getElementById(todos[i]);
-    if (el) el.classList.add('hide');
-  }
-  var mostrar = CAMPOS[movimiento] || [];
-  for (var j=0; j<mostrar.length; j++) {
-    var el2 = document.getElementById(mostrar[j]);
-    if (el2) el2.classList.remove('hide');
-  }
-  var hf = document.getElementById('hint-fecha');
-  if (hf) hf.textContent = HINT_FECHA[movimiento] || 'Fecha del movimiento';
-  var titulos = {alta:'Datos del Trabajador (Alta)',reingreso:'Datos del Trabajador (Reingreso)',baja:'Identificacion del Trabajador',salario:'Identificacion del Trabajador'};
-  document.getElementById('card3-title').textContent = titulos[movimiento] || 'Datos del Trabajador';
-  var subs = {alta:'Informacion completa para el alta en el IMSS',reingreso:'Datos del trabajador que regresa a laborar',baja:'Solo se requieren datos basicos para la baja',salario:'Identifica al trabajador cuyo salario se modifica'};
-  document.getElementById('card3-sub').textContent = subs[movimiento] || '';
-  var t4 = {alta:'Datos Laborales del Alta',reingreso:'Datos Laborales del Reingreso',baja:'Datos de la Baja',salario:'Nueva Informacion Salarial'};
-  document.getElementById('card4-title').textContent = t4[movimiento] || 'Datos Laborales';
-}
+<div class="stepbar" id="stepbar"></div>
 
-function goNext(from) {
-  if (!validar(from)) return;
-  if (from === 1) aplicarCampos();
-  paso = from + 1;
-  if (paso === 5) armarResumen();
-  actualizarUI();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function goPrev(from) {
-  paso = from - 1;
-  actualizarUI();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function actualizarUI() {
-  for (var i=1;i<=5;i++) {
-    var c=document.getElementById('card'+i);
-    if(i===paso) c.classList.add('active'); else c.classList.remove('active');
-    var t=document.getElementById('st'+i);
-    var n=document.getElementById('sn'+i);
-    t.classList.remove('active','done');
-    if(i===paso){t.classList.add('active');n.textContent=i;}
-    else if(i<paso){t.classList.add('done');n.textContent='\u2713';}
-    else{n.textContent=i;}
-  }
-}
+<div class="wrapper">
 
-function validar(p) {
-  var ok=true;
-  if (p===1) {
-    if (!movimiento) { alert('Selecciona el tipo de movimiento para continuar.'); return false; }
-  }
-  if (p===2) {
-    if (g('reg_patronal').trim().length < 8) { marcarErr('reg_patronal'); ok=false; }
-    if (g('nombre_patron').trim().length < 2) { marcarErr('nombre_patron'); ok=false; }
-    var em=g('email');
-    if (!em||em.indexOf('@')<1) { marcarErr('email'); ok=false; }
-  }
-  if (p===3) {
-    var nss=g('nss').replace(/\s/g,'');
-    if (nss.length!==11) { marcarErr('nss'); ok=false; }
-    if (!esOculto('f-nombre') && g('nombre').trim().length<3) { marcarErr('nombre'); ok=false; }
-    if (!esOculto('f-curp') && g('curp').trim().length!==18) { marcarErr('curp'); ok=false; }
-    if (!esOculto('f-nacimiento') && !g('nacimiento')) { marcarErr('nacimiento'); ok=false; }
-  }
-  if (p===4) {
-    if (!g('fecha_mov')) { marcarErr('fecha_mov'); ok=false; }
-    if (!esOculto('f-motivo-baja') && !g('motivo_baja')) { marcarErr('motivo_baja'); ok=false; }
-    if (!esOculto('f-salario') && (!g('salario')||parseFloat(g('salario'))<=0)) { marcarErr('salario'); ok=false; }
-  }
-  if (p===5) {
-    if (!document.getElementById('acepto').checked) { alert('Debes aceptar los terminos para continuar.'); return false; }
-  }
-  return ok;
-}
+<!-- CARD 1: Tipo CFDI + Emisor -->
+<div class="card active" id="card1">
+  <div class="chead"><div class="cico">&#128196;</div><div><h2>Tipo de Comprobante y tu Empresa</h2><p>Selecciona el tipo de CFDI que necesitas y proporciona tu RFC</p></div></div>
+  <div class="tipo-grid">
+    <div class="tipo-card tc-factura" id="tc-factura">
+      <div class="tipo-ico">&#128178;</div>
+      <div><div class="tipo-t">Factura de Ingreso</div><div class="tipo-d">CFDI por venta de bienes o servicios prestados</div></div>
+      <div class="tipo-chk" id="chk-factura"></div>
+    </div>
+    <div class="tipo-card tc-pago" id="tc-pago">
+      <div class="tipo-ico">&#9989;</div>
+      <div><div class="tipo-t">Complemento de Pago</div><div class="tipo-d">Para liquidar facturas emitidas con metodo PPD</div></div>
+      <div class="tipo-chk" id="chk-pago"></div>
+    </div>
+  </div>
+  <div class="fields">
+    <div class="f">
+      <label>Tu RFC (Emisor) <span class="r">*</span></label>
+      <input type="text" id="rfc_emisor" placeholder="RFC de tu empresa" maxlength="13" style="font-family:monospace;letter-spacing:1px;text-transform:uppercase">
+      <span class="hint">Accepti jalara del catalogo tu razon social, regimen y datos fiscales</span>
+      <span class="emsg" id="e-rfc_emisor">RFC invalido, minimo 12 caracteres</span>
+    </div>
+    <div class="f">
+      <label>Tu correo electronico <span class="r">*</span></label>
+      <input type="email" id="email_emisor" placeholder="tu@empresa.com">
+      <span class="hint">Aqui recibiras el XML y PDF de tu CFDI</span>
+      <span class="emsg" id="e-email_emisor">Correo invalido</span>
+    </div>
+  </div>
+  <div class="nav"><span class="stepof" id="sf1"></span><button class="btn btnp" id="btn-n1">Continuar &rarr;</button></div>
+</div>
 
-function esOculto(id) {
-  var el=document.getElementById(id);
-  return !el||el.classList.contains('hide');
-}
-function marcarErr(id) {
-  var el=document.getElementById(id); if(el) el.classList.add('err');
-  var em=document.getElementById('e-'+id); if(em) em.style.display='block';
-}
-function clrE(id) {
-  var el=document.getElementById(id); if(el) el.classList.remove('err');
-  var em=document.getElementById('e-'+id); if(em) em.style.display='none';
-}
-function g(id) { var el=document.getElementById(id); return el?el.value:''; }
+<!-- CARD 2: Receptor -->
+<div class="card" id="card2">
+  <div class="chead"><div class="cico">&#127962;</div><div><h2>Datos del Receptor</h2><p>Datos exactamente como aparecen en la Constancia de Situacion Fiscal del receptor</p></div></div>
+  <div class="fields">
+    <div class="f">
+      <label>RFC del Receptor <span class="r">*</span></label>
+      <input type="text" id="rfc_receptor" placeholder="RFC de quien recibe el CFDI" maxlength="13" style="font-family:monospace;letter-spacing:1px;text-transform:uppercase">
+      <span class="emsg" id="e-rfc_receptor">RFC invalido</span>
+    </div>
+    <div class="f">
+      <label>Nombre / Razon Social <span class="r">*</span></label>
+      <input type="text" id="nombre_receptor" placeholder="SIN regimen juridico, en MAYUSCULAS" style="text-transform:uppercase">
+      <span class="hint">Exactamente como aparece en la CSF: sin S.A. de C.V., sin S.C., etc.</span>
+      <span class="emsg" id="e-nombre_receptor">Campo requerido</span>
+    </div>
+    <div class="f">
+      <label>Codigo Postal Fiscal <span class="r">*</span></label>
+      <input type="text" id="cp_receptor" placeholder="72000" maxlength="5">
+      <span class="hint">El del domicilio registrado en el SAT</span>
+      <span class="emsg" id="e-cp_receptor">5 digitos requeridos</span>
+    </div>
+    <div class="f">
+      <label>Regimen Fiscal <span class="r">*</span></label>
+      <select id="regimen_receptor">
+        <option value="">Seleccionar...</option>
+        <option value="601">601 - General de Ley Personas Morales</option>
+        <option value="603">603 - Personas Morales sin Fines Lucrativos</option>
+        <option value="605">605 - Sueldos y Salarios</option>
+        <option value="606">606 - Arrendamiento</option>
+        <option value="607">607 - Enajenacion o Adquisicion de Bienes</option>
+        <option value="608">608 - Demas ingresos</option>
+        <option value="610">610 - Residentes en el Extranjero</option>
+        <option value="611">611 - Ingresos por Dividendos</option>
+        <option value="612">612 - Actividades Empresariales y Profesionales</option>
+        <option value="614">614 - Ingresos por Intereses</option>
+        <option value="615">615 - Ingresos por Premios</option>
+        <option value="616">616 - Sin Obligaciones Fiscales</option>
+        <option value="620">620 - Sociedades Cooperativas de Produccion</option>
+        <option value="621">621 - Incorporacion Fiscal (RIF)</option>
+        <option value="622">622 - Agricolas, Ganaderas, Silvicolas y Pesqueras</option>
+        <option value="623">623 - Opcional para Grupos de Sociedades</option>
+        <option value="624">624 - Coordinados</option>
+        <option value="625">625 - Plataformas Tecnologicas</option>
+        <option value="626">626 - RESICO (Simplificado de Confianza)</option>
+        <option value="628">628 - Hidrocarburos</option>
+        <option value="629">629 - Regimenes Fiscales Preferentes</option>
+        <option value="630">630 - Enajenacion de acciones en bolsa</option>
+      </select>
+      <span class="emsg" id="e-regimen_receptor">Campo requerido</span>
+    </div>
+    <div class="f full">
+      <label>Uso del CFDI <span class="r">*</span></label>
+      <select id="uso_cfdi">
+        <option value="">Seleccionar...</option>
+        <optgroup label="Gastos">
+          <option value="G01">G01 - Adquisicion de mercancias</option>
+          <option value="G02">G02 - Devoluciones, descuentos o bonificaciones</option>
+          <option value="G03">G03 - Gastos en general</option>
+        </optgroup>
+        <optgroup label="Inversiones">
+          <option value="I01">I01 - Construcciones</option>
+          <option value="I02">I02 - Mobilario y equipo de oficina</option>
+          <option value="I03">I03 - Equipo de transporte</option>
+          <option value="I04">I04 - Equipo de computo</option>
+          <option value="I05">I05 - Dados, troqueles y moldes</option>
+          <option value="I06">I06 - Comunicaciones telefonicas</option>
+          <option value="I07">I07 - Comunicaciones satelitales</option>
+          <option value="I08">I08 - Otra maquinaria y equipo</option>
+        </optgroup>
+        <optgroup label="Deducciones personales">
+          <option value="D01">D01 - Honorarios medicos y dentales</option>
+          <option value="D02">D02 - Gastos medicos por incapacidad</option>
+          <option value="D03">D03 - Gastos funerales</option>
+          <option value="D04">D04 - Donativos</option>
+          <option value="D05">D05 - Intereses hipotecarios</option>
+          <option value="D06">D06 - Aportaciones al SAR</option>
+          <option value="D07">D07 - Seguros gastos medicos</option>
+          <option value="D08">D08 - Transportacion escolar obligatoria</option>
+          <option value="D09">D09 - Depositos ahorro y planes de pension</option>
+          <option value="D10">D10 - Colegiaturas</option>
+        </optgroup>
+        <optgroup label="Especiales">
+          <option value="S01">S01 - Sin efectos fiscales</option>
+          <option value="CP01">CP01 - Pagos (complemento de pago)</option>
+          <option value="CN01">CN01 - Nomina</option>
+        </optgroup>
+      </select>
+      <span class="emsg" id="e-uso_cfdi">Campo requerido</span>
+    </div>
+    <div class="f full">
+      <label>Correo del Receptor (opcional)</label>
+      <input type="email" id="email_receptor" placeholder="correo@receptor.com">
+      <span class="hint">Para enviarle copia del CFDI directamente</span>
+    </div>
+  </div>
+  <div class="nav"><button class="btn btnb" id="btn-p2">&larr; Anterior</button><span class="stepof" id="sf2"></span><button class="btn btnp" id="btn-n2">Continuar &rarr;</button></div>
+</div>
 
-function armarResumen() {
-  var tsal=document.querySelector('input[name=tipo_sal]:checked');
-  var nombres={alta:'Alta de Trabajador',reingreso:'Reingreso',baja:'Baja de Trabajador',salario:'Modificacion de Salario'};
-  var filas=[
-    {l:'Tipo de movimiento', v:nombres[movimiento]||movimiento, big:true, full:true},
-    {l:'Registro Patronal',  v:g('reg_patronal')},
-    {l:'Patron / Empresa',   v:g('nombre_patron')},
-    {l:'RFC Patron',         v:g('rfc_patron')||'-'},
-    {l:'Correo',             v:g('email')},
-    {l:'NSS Trabajador',     v:g('nss')},
-    {l:'Nombre',             v:g('nombre')||g('nombre_simple')||'-'},
-    {l:'CURP',               v:g('curp')||'-'},
-    {l:'Fecha del movimiento',v:g('fecha_mov')},
-    {l:'Motivo de baja',     v:g('motivo_baja')||'-'},
-    {l:'Salario Diario',     v:g('salario')?'$'+parseFloat(g('salario')).toFixed(2):'-'},
-    {l:'Tipo de salario',    v:tsal?(['Fijo','Variable','Mixto'][tsal.value]||tsal.value):'-'}
-  ];
-  var html='';
-  for(var i=0;i<filas.length;i++){
-    var d=filas[i];
-    html+='<div class="ri'+(d.full?' full':'')+'"><div class="ril">'+d.l+'</div><div class="riv'+(d.big?' mov':'')+'">'+( d.v||'\u2014')+'</div></div>';
-  }
-  document.getElementById('resumen').innerHTML=html;
-}
+<!-- CARD 3: Conceptos o Complemento de Pago -->
+<div class="card" id="card3">
+  <div class="chead"><div class="cico" id="ico3">&#128230;</div><div><h2 id="t3">Conceptos de la Factura</h2><p id="sub3">Agrega los productos o servicios. Puedes agregar multiples conceptos.</p></div></div>
 
-function enviar() {
-  if(!document.getElementById('acepto').checked){alert('Debes aceptar los terminos.');return;}
-  var folio='IMSS-'+new Date().getFullYear()+'-'+(Math.floor(Math.random()*90000)+10000);
-  var tsal=document.querySelector('input[name=tipo_sal]:checked');
-  var sexo=document.querySelector('input[name=sexo]:checked');
-  var data={
-    folio:folio, timestamp:new Date().toISOString(),
-    tipo_movimiento:movimiento,
-    patron:{
-      registro_patronal:g('reg_patronal').toUpperCase(),
-      nombre:g('nombre_patron'),
-      rfc:g('rfc_patron').toUpperCase(),
-      telefono:g('tel_patron'),
-      email:g('email')
-    },
-    trabajador:{
-      nss:g('nss').replace(/\s/g,''),
-      nombre:g('nombre')||g('nombre_simple'),
-      curp:g('curp'),
-      rfc:g('rfc'),
-      fecha_nacimiento:g('nacimiento'),
-      sexo:sexo?sexo.value:'',
-      umf:g('umf')
-    },
-    movimiento:{
-      fecha:g('fecha_mov'),
-      motivo_baja:g('motivo_baja'),
-      salario_diario:g('salario')?parseFloat(g('salario')).toFixed(2):'',
-      tipo_salario:tsal?tsal.value:'',
-      tipo_trabajador:g('tipo_trab'),
-      jornada:g('jornada'),
-      departamento:g('departamento'),
-      puesto:g('puesto'),
-      cp_trabajador:g('cp'),
-      notas:g('notas')
-    }
-  };
-  fetch(WEBHOOK_IMSS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-    .catch(function(){console.warn('Webhook no configurado');});
-  for(var i=1;i<=5;i++) document.getElementById('card'+i).classList.remove('active');
-  document.getElementById('success').classList.add('active');
-  document.getElementById('folio-num').textContent=folio;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+  <!-- SECCION: Conceptos -->
+  <div id="sec-conceptos">
+    <div class="concs" id="conc-list"></div>
+    <div style="padding:0 26px 10px"><button class="btnadd" id="btn-add-conc">+ Agregar concepto</button></div>
+    <div class="totbox">
+      <div class="trow"><span>Subtotal</span><span id="t-sub">$0.00</span></div>
+      <div class="trow"><span>Descuento</span><span id="t-des">$0.00</span></div>
+      <div class="trow grand"><span>Subtotal</span><span id="t-neto">$0.00</span></div>
+      <div class="hint">IVA y retenciones los calcula Accepti segun tu perfil fiscal</div>
+    </div>
+  </div>
+
+  <!-- SECCION: Complemento de Pago -->
+  <div id="sec-pago" style="display:none">
+    <div class="fields">
+      <div class="f full">
+        <div class="sec-info">El complemento de pago se emite cuando una factura PPD ya fue liquidada. Proporciona los datos del pago recibido.</div>
+      </div>
+      <div class="f full">
+        <label>UUID de la Factura Original <span class="r">*</span></label>
+        <input type="text" id="uuid_origen" placeholder="Folio Fiscal: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" style="font-family:monospace;font-size:12px;text-transform:uppercase">
+        <span class="hint">El UUID de 36 caracteres que aparece en el XML de la factura a pagar</span>
+        <span class="emsg" id="e-uuid_origen">UUID invalido, debe tener 36 caracteres con guiones</span>
+      </div>
+      <div class="f">
+        <label>Serie de la Factura Original</label>
+        <input type="text" id="serie_origen" placeholder="Ej. A">
+        <span class="hint">Opcional, si la factura tiene serie</span>
+      </div>
+      <div class="f">
+        <label>Folio de la Factura Original</label>
+        <input type="text" id="folio_origen" placeholder="Ej. 1025">
+        <span class="hint">Numero de folio de la factura original</span>
+      </div>
+      <div class="f">
+        <label>Fecha y Hora del Pago <span class="r">*</span></label>
+        <input type="datetime-local" id="fecha_pago">
+        <span class="emsg" id="e-fecha_pago">Fecha requerida</span>
+      </div>
+      <div class="f">
+        <label>Forma en que se recibio el Pago <span class="r">*</span></label>
+        <select id="forma_pago_cp">
+          <option value="">Seleccionar...</option>
+          <option value="01">01 - Efectivo</option>
+          <option value="02">02 - Cheque nominativo</option>
+          <option value="03">03 - Transferencia electronica</option>
+          <option value="04">04 - Tarjeta de credito</option>
+          <option value="05">05 - Monedero electronico</option>
+          <option value="06">06 - Dinero electronico</option>
+          <option value="28">28 - Tarjeta de debito</option>
+          <option value="29">29 - Tarjeta de servicios</option>
+          <option value="99">99 - Por definir</option>
+        </select>
+        <span class="emsg" id="e-forma_pago_cp">Campo requerido</span>
+      </div>
+      <div class="f">
+        <label>Monto Pagado <span class="r">*</span></label>
+        <div class="pfx" id="pfx-monto"><span class="pfxl">$</span><input type="number" id="monto_pago" placeholder="1500.00" min="0.01" step="0.01"></div>
+        <span class="emsg" id="e-monto_pago">Monto invalido</span>
+      </div>
+      <div class="f">
+        <label>Numero de Parcialidad <span class="r">*</span></label>
+        <input type="number" id="num_parcialidad" placeholder="1" min="1" step="1" value="1">
+        <span class="hint">1 = primer pago, 2 = segundo pago, etc.</span>
+        <span class="emsg" id="e-num_parcialidad">Campo requerido</span>
+      </div>
+      <div class="f">
+        <label>Saldo Anterior (antes de este pago) <span class="r">*</span></label>
+        <div class="pfx"><span class="pfxl">$</span><input type="number" id="saldo_anterior" placeholder="2000.00" min="0" step="0.01"></div>
+        <span class="hint">Total pendiente de la factura antes de este abono</span>
+        <span class="emsg" id="e-saldo_anterior">Campo requerido</span>
+      </div>
+      <div class="f">
+        <label>Moneda del Pago</label>
+        <div class="pills">
+          <input type="radio" name="mon_cp" id="cp-mxn" value="MXN" class="pr" checked><label for="cp-mxn" class="pl">MXN</label>
+          <input type="radio" name="mon_cp" id="cp-usd" value="USD" class="pr"><label for="cp-usd" class="pl">USD</label>
+        </div>
+      </div>
+      <div class="f">
+        <label>Numero de Operacion (opcional)</label>
+        <input type="text" id="num_operacion" placeholder="Ej. 1234567890">
+        <span class="hint">Referencia bancaria o numero de cheque</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav"><button class="btn btnb" id="btn-p3">&larr; Anterior</button><span class="stepof" id="sf3"></span><button class="btn btnp" id="btn-n3">Continuar &rarr;</button></div>
+</div>
+
+<!-- CARD 4: Forma de Pago -->
+<div class="card" id="card4">
+  <div class="chead"><div class="cico">&#128179;</div><div><h2>Datos de Pago</h2><p>Indica como fue o sera liquidada esta factura</p></div></div>
+  <div class="fields">
+    <div class="f full">
+      <label>Metodo de Pago</label>
+      <div class="pills">
+        <input type="radio" name="metodo" id="m-pue" value="PUE" class="pr" checked><label for="m-pue" class="pl">PUE &mdash; Una sola exhibicion</label>
+        <input type="radio" name="metodo" id="m-ppd" value="PPD" class="pr"><label for="m-ppd" class="pl">PPD &mdash; Parcialidades / Diferido</label>
+      </div>
+      <span class="hint">PUE = pagado en el mismo mes &middot; PPD = se pagara despues, requiere Complemento de Pago</span>
+    </div>
+    <div class="f">
+      <label>Forma de Pago <span class="r">*</span></label>
+      <select id="forma_pago">
+        <option value="">Seleccionar...</option>
+        <option value="01">01 - Efectivo</option>
+        <option value="02">02 - Cheque nominativo</option>
+        <option value="03" selected>03 - Transferencia electronica</option>
+        <option value="04">04 - Tarjeta de credito</option>
+        <option value="05">05 - Monedero electronico</option>
+        <option value="06">06 - Dinero electronico</option>
+        <option value="08">08 - Vales de despensa</option>
+        <option value="12">12 - Dacion en pago</option>
+        <option value="17">17 - Compensacion</option>
+        <option value="28">28 - Tarjeta de debito</option>
+        <option value="29">29 - Tarjeta de servicios</option>
+        <option value="30">30 - Aplicacion de anticipos</option>
+        <option value="99">99 - Por definir (PPD)</option>
+      </select>
+      <span class="emsg" id="e-forma_pago">Campo requerido</span>
+    </div>
+    <div class="f">
+      <label>Moneda</label>
+      <div class="pills">
+        <input type="radio" name="moneda" id="mon-mxn" value="MXN" class="pr" checked><label for="mon-mxn" class="pl">MXN &mdash; Peso</label>
+        <input type="radio" name="moneda" id="mon-usd" value="USD" class="pr"><label for="mon-usd" class="pl">USD &mdash; Dolar</label>
+      </div>
+    </div>
+    <div class="f hide" id="f-tc">
+      <label>Tipo de Cambio</label>
+      <div class="pfx"><span class="pfxl">1 USD =</span><input type="number" id="tipo_cambio" placeholder="17.50" step="0.01" min="1"></div>
+    </div>
+    <div class="f full">
+      <label>Referencia / Numero de OC (opcional)</label>
+      <input type="text" id="referencia" placeholder="OC-2026-001, numero de proyecto, contrato...">
+    </div>
+    <div class="f full">
+      <label>Notas adicionales (opcional)</label>
+      <textarea id="notas" rows="3" placeholder="Periodo facturado, instrucciones especiales..."></textarea>
+    </div>
+  </div>
+  <div class="nav"><button class="btn btnb" id="btn-p4">&larr; Anterior</button><span class="stepof" id="sf4"></span><button class="btn btnp" id="btn-n4">Continuar &rarr;</button></div>
+</div>
+
+<!-- CARD 5: Confirmar -->
+<div class="card" id="card5">
+  <div class="chead"><div class="cico">&#9989;</div><div><h2>Confirmar Solicitud</h2><p>Revisa que todo sea correcto. Una vez enviado no puede modificarse.</p></div></div>
+  <div class="resgrid" id="resumen"></div>
+  <div class="checksec">
+    <input type="checkbox" id="acepto">
+    <label for="acepto">Confirmo que los datos son correctos y autorizo a Accepti Contadores S.C. a procesar y timbrar este CFDI ante el SAT. <a href="https://www.accepti.com.mx" target="_blank">Terminos de servicio</a>.</label>
+  </div>
+  <div class="nav"><button class="btn btnb" id="btn-p5">&larr; Anterior</button><span class="stepof" id="sf5"></span><button class="btn btns" id="btn-enviar">&#128228; Enviar Solicitud</button></div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success" id="success">
+  <div class="sucico">&#127881;</div>
+  <h2>Solicitud Enviada</h2>
+  <p>Hemos recibido tu solicitud. Guarda tu folio:</p>
+  <div class="folio" id="folio-num"></div>
+  <p>Recibiras tu CFDI (XML + PDF) en tu correo en un maximo de <strong>4 horas habiles</strong>.</p>
+  <div class="nxtlist">
+    <h3>Que sigue</h3>
+    <ul>
+      <li><span class="dot">&rarr;</span> Accepti valida tus datos fiscales en el SAT</li>
+      <li><span class="dot">&rarr;</span> Calculamos impuestos segun tu perfil</li>
+      <li><span class="dot">&rarr;</span> Timbramos ante el SAT via Facturama</li>
+      <li><span class="dot">&rarr;</span> Te enviamos XML + PDF a tu correo</li>
+    </ul>
+  </div>
+  <p style="font-size:13px;color:var(--muted)">WhatsApp <strong style="color:var(--navy)">(222) 864-2948</strong></p>
+</div>
+
+</div>
+<footer>&copy; 2026 <a href="https://www.accepti.com.mx" target="_blank">Accepti Contadores S.C.</a> &middot; Privada 14B Sur 6703, Col. Villa Universitaria, Puebla, Pue. &middot; (222) 755-0328</footer>
+<script src="app.js"></script>
+</body>
+</html>
