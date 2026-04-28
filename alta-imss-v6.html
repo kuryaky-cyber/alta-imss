@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movimientos Afiliatorios IMSS — Accepti Contadores</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#00A99D;--teal2:#007F76;--coral:#F15A29;--navy:#0D2B5E;
+  --blue:#1E4FA0;--ink:#1A1A2E;--muted:#6B7280;--lite:#F0FAF9;
+  --bg:#F7F8FC;--white:#FFFFFF;--border:#E2E8F0;--field:#FAFBFF;
+  --red:#DC2626;--green:#16A34A;--yellow:#F59E0B;
+  --amber-bg:#FFF8ED;--amber-bdr:#F7C31A;--amber-txt:#92610A;
+  --info-bg:#EDF4FF;--info-bdr:#BFCFEF;--info-txt:#1E4FA0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--navy);padding:7px 32px;display:flex;justify-content:space-between;align-items:center}
+.topbar span{font-size:12px;color:rgba(255,255,255,.55);font-weight:300}
+.topbar a{font-size:12px;color:var(--teal);text-decoration:none;font-weight:600}
+
+/* ── HEADER ── */
+header{background:var(--white);border-bottom:3px solid var(--teal);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:68px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand img{width:44px;height:44px;object-fit:contain;border-radius:8px;flex-shrink:0}
+.bico{width:44px;height:44px;display:none;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.bico span{display:block}
+.bc1{background:#00A99D}.bc2{background:#F15A29}.bc3{background:#1E4FA0}.bc4{background:#F7C31A}
+.bname{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;color:var(--navy);letter-spacing:-.3px;line-height:1}
+.bname em{color:var(--teal);font-style:normal}
+.bsub{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+.hright{text-align:right;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.hright strong{color:var(--navy)}
+.hright a{color:var(--teal);text-decoration:none}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 60%,var(--teal2) 100%);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hero h2{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;color:#fff}
+.hero p{font-size:13px;color:rgba(255,255,255,.65);margin-top:3px;font-weight:300}
+.cpill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:4px;letter-spacing:1px;white-space:nowrap}
+
+/* ── STEPS ── */
+.steps{background:var(--white);border-bottom:1px solid var(--border);display:flex;padding:0 32px;overflow-x:auto}
+.stab{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:3px solid transparent;cursor:default;white-space:nowrap;transition:border-color .2s}
+.stab.active{border-bottom-color:var(--teal)}.stab.done{border-bottom-color:var(--teal2)}
+.snum{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;transition:all .2s}
+.stab.active .snum{background:var(--teal);color:#fff}.stab.done .snum{background:var(--teal2);color:#fff}
+.stitle{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.stab.active .stitle,.stab.done .stitle{color:var(--teal2)}
+.sdesc{font-size:11px;color:var(--muted);font-weight:300}
+.ssep{color:var(--border);padding:0 4px;font-size:18px;align-self:center}
+
+/* ── WRAPPER / CARDS ── */
+.wrapper{max-width:800px;margin:28px auto 0;padding:0 18px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.05);display:none;overflow:hidden}
+.card.active{display:block;animation:fadeup .35s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chead{background:linear-gradient(90deg,var(--lite) 0%,var(--white) 70%);border-bottom:1px solid var(--border);padding:18px 26px;display:flex;align-items:center;gap:13px}
+.cico{width:38px;height:38px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.chead h2{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px}
+.chead p{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── FIELDS ── */
+.fields{padding:22px 26px;display:grid;grid-template-columns:1fr 1fr;gap:16px 20px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f.full{grid-column:1/-1}
+.f.hide{display:none!important}
+.f.third{grid-column:span 1}
+.fields-3{padding:22px 26px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px 20px}
+
+label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.6px}
+.r{color:var(--coral);margin-left:2px}
+.opt{color:var(--muted);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;margin-left:4px}
+
+input,select,textarea{
+  background:var(--field);border:1.5px solid var(--border);border-radius:6px;
+  padding:10px 12px;font-family:'Lato',sans-serif;font-size:14px;color:var(--ink);
+  transition:border-color .2s,box-shadow .2s;outline:none;width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,169,157,.1)}
+input.err,select.err{border-color:var(--red)}
+input.ok{border-color:var(--green)}
+input::placeholder,textarea::placeholder{color:#C5D0DC;font-style:italic}
+select{cursor:pointer;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.hint{font-size:11px;color:var(--muted);line-height:1.4}
+.emsg{font-size:11px;color:var(--red);display:none;font-weight:600}
+
+/* Prefijo $ */
+.pfx{display:flex;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;background:var(--field);transition:border-color .2s,box-shadow .2s}
+.pfx:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,169,157,.1)}
+.pfx.err-pfx{border-color:var(--red)}
+.pfxl{padding:10px 11px;background:var(--lite);border-right:1.5px solid var(--border);font-size:13px;color:var(--teal2);font-weight:700;white-space:nowrap;flex-shrink:0}
+.pfx input{border:none;border-radius:0;background:transparent;box-shadow:none}
+
+/* Pills radio */
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pr{display:none}
+.pl{padding:7px 14px;border-radius:4px;border:1.5px solid var(--border);font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .2s;color:var(--muted)}
+.pr:checked+.pl{background:var(--teal);border-color:var(--teal);color:#fff}
+
+/* Input con ícono validador */
+.fi{position:relative}
+.fi input{padding-right:34px}
+.vico{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;display:none;pointer-events:none}
+
+/* ── TIPO MOVIMIENTO ── */
+.mov-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:22px 26px}
+.mov-card{border:2px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;background:var(--field)}
+.mov-card:hover{border-color:var(--teal);background:var(--lite)}
+.mov-card.selected{border-color:var(--teal);background:var(--lite);box-shadow:0 0 0 3px rgba(0,169,157,.1)}
+.mov-icon{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mov-alta .mov-icon{background:#EDFFF5;color:var(--green)}
+.mov-reingreso .mov-icon{background:#EDF4FF;color:var(--blue)}
+.mov-baja .mov-icon{background:#FFF0EE;color:var(--coral)}
+.mov-salario .mov-icon{background:#FFF8ED;color:var(--yellow)}
+.mov-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--navy)}
+.mov-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.mov-plazo{margin-top:4px;font-size:11px;color:var(--coral);font-weight:700}
+.mov-badge{margin-left:auto;flex-shrink:0;width:20px;height:20px;border-radius:50%;border:2px solid var(--border);transition:all .2s}
+.mov-card.selected .mov-badge{background:var(--teal);border-color:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+
+/* ── ALERTAS ── */
+.plazo-alert{margin:0 26px 16px;padding:11px 16px;background:var(--amber-bg);border:1px solid var(--amber-bdr);border-radius:8px;font-size:12px;color:var(--amber-txt);display:none;gap:8px;align-items:flex-start}
+.plazo-alert.show{display:flex}
+.alerta-info{margin:16px 26px 0;padding:12px 16px;background:var(--info-bg);border:1px solid var(--info-bdr);border-radius:8px;font-size:12px;color:var(--info-txt);display:none;gap:8px;align-items:flex-start;line-height:1.5}
+.alerta-info.show{display:flex}
+.alerta-warn{padding:11px 16px;background:var(--amber-bg);border:1px solid var(--amber-bdr);border-radius:8px;font-size:12px;color:var(--amber-txt);display:none;gap:8px;align-items:center;margin-top:8px}
+.alerta-warn.show{display:flex}
+
+/* ── CALCULADORA SDI ── */
+.sdi-wrap{margin:0 26px 20px;background:var(--lite);border:1px solid rgba(0,169,157,.3);border-radius:8px;padding:16px 18px;display:none}
+.sdi-wrap.show{display:block}
+.sdi-head{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--teal2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.sdi-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.sdi-row{padding:8px 0;border-bottom:1px solid rgba(0,169,157,.12);display:flex;flex-direction:column;gap:2px}
+.sdi-row:last-child{border-bottom:none;grid-column:1/-1;padding-top:12px;margin-top:4px}
+.sdi-lbl{font-size:11px;color:var(--muted)}
+.sdi-val{font-size:14px;font-weight:600;color:var(--ink)}
+.sdi-total .sdi-lbl{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--teal2);text-transform:uppercase;letter-spacing:.4px}
+.sdi-total .sdi-val{font-size:20px;font-weight:700;color:var(--teal2)}
+
+/* ── RESUMEN FINAL ── */
+.resgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:18px 26px}
+.ri{background:var(--field);border:1px solid var(--border);border-radius:6px;padding:11px 14px}
+.ri.full{grid-column:1/-1}
+.ril{font-family:'Montserrat',sans-serif;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.riv{font-size:14px;font-weight:500;color:var(--navy)}
+.riv.mov{font-size:15px;font-weight:700;color:var(--teal2)}
+.riv.mono{font-family:'Lato',monospace;letter-spacing:.5px;font-size:13px}
+
+/* ── CHECKBOX ── */
+.checksec{padding:0 26px 18px;display:flex;align-items:flex-start;gap:10px}
+.checksec input[type=checkbox]{width:16px;height:16px;margin-top:3px;flex-shrink:0;accent-color:var(--teal)}
+.checksec label{font-size:12px;color:var(--muted);font-family:'Lato',sans-serif;text-transform:none;letter-spacing:0;font-weight:400}
+.checksec a{color:var(--teal2)}
+
+/* ── NAVEGACIÓN ── */
+.nav{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 20px;border-top:1px solid var(--border)}
+.stepof{font-size:12px;color:var(--muted);font-style:italic}
+.btn{padding:11px 26px;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:none;text-transform:uppercase;letter-spacing:.5px}
+.btnp{background:var(--teal);color:#fff}.btnp:hover{background:var(--teal2);transform:translateY(-1px)}
+.btnb{background:transparent;color:var(--muted);border:1.5px solid var(--border)}.btnb:hover{background:var(--bg);color:var(--navy)}
+.btns{background:var(--green);color:#fff;padding:11px 36px}.btns:hover{background:#14753e;transform:translateY(-1px)}
+
+/* ── SUCCESS ── */
+.success{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:56px 36px;text-align:center;display:none}
+.success.active{display:block;animation:fadeup .5s ease}
+.sucico{width:72px;height:72px;background:rgba(0,169,157,.1);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px}
+.success h2{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.success p{font-size:14px;color:var(--muted);max-width:420px;margin:0 auto 16px}
+.folio{display:inline-block;background:var(--lite);border:2px solid var(--teal);border-radius:6px;padding:10px 28px;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--teal2);letter-spacing:3px;margin-bottom:24px}
+.nextsteps{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px 20px;text-align:left;max-width:420px;margin:0 auto 20px}
+.nextsteps h3{font-family:'Montserrat',sans-serif;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px}
+.nextsteps li{font-size:13px;list-style:none;padding:5px 0;display:flex;gap:8px}
+.nextsteps .dot{color:var(--teal);font-weight:700}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,.45);text-align:center;padding:14px;font-size:11px;margin-top:36px}
+footer a{color:var(--teal);text-decoration:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .topbar,header,.hero{padding:10px 16px}
+  .steps{padding:0 12px}
+  .fields,.fields-3{grid-template-columns:1fr;padding:14px 16px}
+  .f.full{grid-column:1}
+  .mov-grid{grid-template-columns:1fr;padding:14px 16px}
+  .sdi-grid{grid-template-columns:1fr}
+  .resgrid{grid-template-columns:1fr;padding:14px 16px}
+  .chead,.nav{padding:14px 16px}
+  .sdi-wrap,.plazo-alert,.alerta-info,.checksec{margin-left:16px;margin-right:16px}
+  .hright{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span>Privada 14B Sur 6703, Villa Universitaria, Puebla &middot; (222) 755-0328</span>
+  <a href="https://www.accepti.com.mx" target="_blank">accepti.com.mx &rarr;</a>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a class="brand" href="https://www.accepti.com.mx" target="_blank">
+    <img id="logo-img" src="https://static.wixstatic.com/media/dca6eb_24aec97af69f477e97f2dd5bb2d615fe~mv2.png/v1/fill/w_80,h_80,al_c,q_85,enc_avif,quality_auto/ICONO%20COLORES-05.png" alt="Accepti" width="44" height="44">
+    <div class="bico" id="logo-fallback"><span class="bc1"></span><span class="bc2"></span><span class="bc3"></span><span class="bc4"></span></div>
+    <div><div class="bname">ACCEPT<em>I</em></div><div class="bsub">Contadores S.C.</div></div>
+  </a>
+  <div class="hright">
+    <span>WhatsApp <strong>(222) 864-2948</strong></span>
+    <a href="https://www.accepti.com.mx" target="_blank">contabilidad@accepti.com.mx</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <h2>Movimientos Afiliatorios &mdash; IMSS</h2>
+    <p>Alta, baja, reingreso y modificacion de salario ante el Instituto Mexicano del Seguro Social</p>
+  </div>
+  <div class="cpill">IMSS &middot; SUA &middot; IDSE</div>
+</div>
+
+<!-- STEPS -->
+<div class="steps">
+  <div class="stab active" id="st1"><div class="snum" id="sn1">1</div><div><div class="stitle">Movimiento</div><div class="sdesc">Tipo de tramite</div></div></div>
+  <div class="ssep">&rsaquo;</div>
+  <div class="stab" id="st2"><div class="snum" id="sn2">2</div><div><div class="stitle">Patron</div><div class="sdesc">Empresa</div></div></div>
+  <div class="ssep">&rsaquo;</div>
+  <div class="stab" id="st3"><div class="snum" id="sn3">3</div><div><div class="stitle">Trabajador</div><div class="sdesc">Datos personales</div></div></div>
+  <div class="ssep">&rsaquo;</div>
+  <div class="stab" id="st4"><div class="snum" id="sn4">4</div><div><div class="stitle">Laboral</div><div class="sdesc">Contrato y salario</div></div></div>
+  <div class="ssep">&rsaquo;</div>
+  <div class="stab" id="st5"><div class="snum" id="sn5">5</div><div><div class="stitle">Confirmar</div><div class="sdesc">Revisar y enviar</div></div></div>
+</div>
+
+<div class="wrapper">
+
+<!-- ════════════════════════════════════
+     PASO 1 — TIPO DE MOVIMIENTO
+════════════════════════════════════ -->
+<div class="card active" id="card1">
+  <div class="chead"><div class="cico">&#128196;</div><div><h2>Tipo de Movimiento Afiliatorio</h2><p>Selecciona el tramite que deseas realizar ante el IMSS</p></div></div>
+  <div class="mov-grid">
+    <div class="mov-card mov-alta" id="mov-alta">
+      <div class="mov-icon">&#128100;</div>
+      <div>
+        <div class="mov-title">Alta de Trabajador</div>
+        <div class="mov-desc">Primera inscripcion al IMSS con el patron</div>
+        <div class="mov-plazo">Plazo: 5 dias habiles desde inicio de labores</div>
+      </div>
+      <div class="mov-badge" id="badge-alta"></div>
+    </div>
+    <div class="mov-card mov-reingreso" id="mov-reingreso">
+      <div class="mov-icon">&#128257;</div>
+      <div>
+        <div class="mov-title">Reingreso</div>
+        <div class="mov-desc">Trabajador que regresa despues de una baja</div>
+        <div class="mov-plazo">Plazo: 5 dias habiles desde el reingreso</div>
+      </div>
+      <div class="mov-badge" id="badge-reingreso"></div>
+    </div>
+    <div class="mov-card mov-baja" id="mov-baja">
+      <div class="mov-icon">&#128683;</div>
+      <div>
+        <div class="mov-title">Baja de Trabajador</div>
+        <div class="mov-desc">Terminacion de la relacion laboral</div>
+        <div class="mov-plazo">Plazo: 5 dias habiles desde la separacion</div>
+      </div>
+      <div class="mov-badge" id="badge-baja"></div>
+    </div>
+    <div class="mov-card mov-salario" id="mov-salario">
+      <div class="mov-icon">&#128176;</div>
+      <div>
+        <div class="mov-title">Modificacion de Salario</div>
+        <div class="mov-desc">Cambio en el salario base de cotizacion</div>
+        <div class="mov-plazo">Plazo: 5 dias habiles desde el cambio</div>
+      </div>
+      <div class="mov-badge" id="badge-salario"></div>
+    </div>
+  </div>
+  <div class="plazo-alert" id="plazo-alert"><span style="font-size:16px;flex-shrink:0">&#9888;</span><span id="plazo-txt"></span></div>
+  <div style="height:12px"></div>
+  <div class="nav"><span class="stepof">Paso 1 de 5</span><button class="btn btnp" id="btn-next-1">Continuar &rarr;</button></div>
+</div>
+
+<!-- ════════════════════════════════════
+     PASO 2 — DATOS DEL PATRON
+════════════════════════════════════ -->
+<div class="card" id="card2">
+  <div class="chead"><div class="cico">&#127970;</div><div><h2>Datos del Patron / Empresa</h2><p>Informacion del patron ante el IMSS</p></div></div>
+  <div class="fields">
+    <div class="f">
+      <label>Registro Patronal IMSS <span class="r">*</span></label>
+      <div class="fi">
+        <input type="text" id="reg_patronal" placeholder="Ej. Y4512345678" maxlength="11" style="font-family:monospace;letter-spacing:1px">
+        <span class="vico" id="vi-rp"></span>
+      </div>
+      <span class="hint">Numero en la Tarjeta de Identificacion Patronal (TIP). Sin guiones ni espacios.</span>
+      <span class="emsg" id="e-reg_patronal">Registro patronal requerido (10-11 caracteres)</span>
+    </div>
+    <div class="f">
+      <label>Nombre / Razon Social <span class="r">*</span></label>
+      <input type="text" id="nombre_patron" placeholder="Nombre de la empresa o persona fisica" style="text-transform:uppercase">
+      <span class="emsg" id="e-nombre_patron">Campo requerido</span>
+    </div>
+    <div class="f">
+      <label>RFC del Patron</label>
+      <div class="fi">
+        <input type="text" id="rfc_patron" placeholder="RFC de la empresa" maxlength="13" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px">
+        <span class="vico" id="vi-rfc"></span>
+      </div>
+      <span class="hint">12 chars (moral) o 13 (fisica)</span>
+    </div>
+    <div class="f">
+      <label>Telefono WhatsApp <span class="r">*</span></label>
+      <input type="tel" id="tel_patron" placeholder="2221234567" maxlength="10">
+      <span class="hint">10 digitos. Recibirás confirmacion de Accepti.</span>
+      <span class="emsg" id="e-tel_patron">Ingresa 10 digitos sin espacios</span>
+    </div>
+    <div class="f full">
+      <label>Correo electronico <span class="r">*</span></label>
+      <input type="email" id="email" placeholder="correo@empresa.com">
+      <span class="hint">Para enviarle el acuse del movimiento</span>
+      <span class="emsg" id="e-email">Correo electronico invalido</span>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="btn btnb" id="btn-prev-2">&larr; Anterior</button>
+    <button class="btn btnp" id="btn-next-2">Continuar &rarr;</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PASO 3 — DATOS DEL TRABAJADOR
+════════════════════════════════════ -->
+<div class="card" id="card3">
+  <div class="chead"><div class="cico">&#128100;</div><div><h2 id="card3-title">Datos del Trabajador</h2><p id="card3-sub">Informacion del trabajador</p></div></div>
+
+  <!-- Alerta nombre exacto (alta y reingreso) -->
+  <div class="alerta-info" id="alerta-nombre">
+    <span style="font-size:16px;flex-shrink:0">&#9432;</span>
+    <span><strong>Importante:</strong> Captura los nombres <strong>exactamente</strong> como aparecen en el acta de nacimiento o INE, en MAYUSCULAS y sin abreviaturas. El IMSS rechaza movimientos cuando el nombre no coincide con sus registros.</span>
+  </div>
+
+  <div class="fields" id="fields3">
+
+    <!-- NSS — todos -->
+    <div class="f" id="f-nss">
+      <label>NSS &mdash; Num. de Seguridad Social <span class="r">*</span></label>
+      <div class="fi">
+        <input type="text" id="nss" placeholder="12345678901" maxlength="11" style="font-family:monospace;letter-spacing:2px">
+        <span class="vico" id="vi-nss"></span>
+      </div>
+      <span class="hint">11 digitos exactos. Sin espacios ni guiones.</span>
+      <span class="emsg" id="e-nss">NSS invalido. Debe tener 11 digitos.</span>
+    </div>
+
+    <!-- APELLIDO PATERNO — alta y reingreso -->
+    <div class="f hide" id="f-ap-paterno">
+      <label>Apellido Paterno <span class="r">*</span></label>
+      <input type="text" id="ap_paterno" placeholder="GARCIA" maxlength="40">
+      <span class="hint">Sin acentos. Solo letras mayusculas.</span>
+      <span class="emsg" id="e-ap_paterno">Campo requerido</span>
+    </div>
+
+    <!-- APELLIDO MATERNO — alta y reingreso -->
+    <div class="f hide" id="f-ap-materno">
+      <label>Apellido Materno <span class="opt">(dejar vacio si no aplica)</span></label>
+      <input type="text" id="ap_materno" placeholder="LOPEZ" maxlength="35">
+    </div>
+
+    <!-- NOMBRE(S) — alta y reingreso -->
+    <div class="f hide" id="f-nombres">
+      <label>Nombre(s) <span class="r">*</span></label>
+      <input type="text" id="nombres" placeholder="JUAN CARLOS" maxlength="20">
+      <span class="hint">Primer y segundo nombre. Sin abreviaturas.</span>
+      <span class="emsg" id="e-nombres">Campo requerido</span>
+    </div>
+
+    <!-- NOMBRE SIMPLE — baja y modificacion de salario -->
+    <div class="f full hide" id="f-nombre-simple">
+      <label>Nombre del trabajador <span class="opt">(referencia interna)</span></label>
+      <input type="text" id="nombre_simple" placeholder="Para identificacion interna del registro">
+      <span class="hint">Solo para referencia del contador. No va al archivo DISPMAG.</span>
+    </div>
+
+    <!-- CURP — alta y reingreso -->
+    <div class="f hide" id="f-curp">
+      <label>CURP <span class="r">*</span></label>
+      <div class="fi">
+        <input type="text" id="curp" placeholder="XXXX000000XXXXXXXX00" maxlength="18" style="font-family:monospace;letter-spacing:1px">
+        <span class="vico" id="vi-curp"></span>
+      </div>
+      <span class="hint">18 caracteres exactos. Verificar en gob.mx/curp</span>
+      <span class="emsg" id="e-curp">CURP invalida. Debe tener 18 caracteres en formato correcto.</span>
+    </div>
+
+    <!-- RFC TRABAJADOR — alta y reingreso -->
+    <div class="f hide" id="f-rfc">
+      <label>RFC del Trabajador <span class="opt">(recomendado)</span></label>
+      <div class="fi">
+        <input type="text" id="rfc" placeholder="XXXX000000XXX" maxlength="13" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px">
+        <span class="vico" id="vi-rfc-trab"></span>
+      </div>
+      <span class="hint">Necesario para timbrado de nomina CFDI 4.0</span>
+    </div>
+
+    <!-- FECHA NACIMIENTO — alta -->
+    <div class="f hide" id="f-nacimiento">
+      <label>Fecha de nacimiento <span class="opt">(recomendado)</span></label>
+      <input type="date" id="nacimiento">
+      <span class="hint">Para el expediente del trabajador y SUA.</span>
+    </div>
+
+    <!-- SEXO — alta -->
+    <div class="f hide" id="f-sexo">
+      <label>Sexo <span class="r">*</span></label>
+      <div class="pills">
+        <input type="radio" name="sexo" id="masc" value="H" class="pr"><label for="masc" class="pl">Hombre</label>
+        <input type="radio" name="sexo" id="fem" value="M" class="pr"><label for="fem" class="pl">Mujer</label>
+      </div>
+      <span class="emsg" id="e-sexo">Selecciona el sexo</span>
+    </div>
+
+    <!-- UMF — alta -->
+    <div class="f hide" id="f-umf">
+      <label>UMF &mdash; Clinica IMSS <span class="opt">(si se conoce)</span></label>
+      <input type="text" id="umf" placeholder="000" maxlength="3" value="000">
+      <span class="hint">3 digitos. Si no sabe, dejar 000 y el IMSS asignara automaticamente.</span>
+    </div>
+
+    <!-- CP TRABAJADOR — alta -->
+    <div class="f hide" id="f-cp">
+      <label>Codigo Postal del trabajador <span class="opt">(opcional)</span></label>
+      <input type="text" id="cp" placeholder="72590" maxlength="5">
+      <span class="hint">Domicilio del trabajador. Ayuda al IMSS a asignar la UMF correcta.</span>
+    </div>
+
+  </div>
+  <div class="nav">
+    <button class="btn btnb" id="btn-prev-3">&larr; Anterior</button>
+    <button class="btn btnp" id="btn-next-3">Continuar &rarr;</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PASO 4 — DATOS LABORALES
+════════════════════════════════════ -->
+<div class="card" id="card4">
+  <div class="chead"><div class="cico">&#128188;</div><div><h2 id="card4-title">Datos Laborales</h2><p id="card4-sub">Contrato, jornada y salario</p></div></div>
+
+  <div class="fields" id="fields4">
+
+    <!-- FECHA MOVIMIENTO — todos -->
+    <div class="f full">
+      <label>Fecha del movimiento <span class="r">*</span></label>
+      <input type="date" id="fecha_mov">
+      <span class="hint" id="hint-fecha">Fecha efectiva del movimiento</span>
+      <span class="emsg" id="e-fecha_mov">Fecha requerida</span>
+      <div class="alerta-warn" id="alerta-extemp">
+        <span style="font-size:15px;flex-shrink:0">&#9888;</span>
+        <span>Esta fecha supera los 5 dias habiles. El movimiento sera <strong>extemporaneo</strong> y puede generar recargos. Confirmar con el contador.</span>
+      </div>
+    </div>
+
+    <!-- MOTIVO BAJA — solo baja -->
+    <div class="f full hide" id="f-motivo-baja">
+      <label>Motivo de baja <span class="r">*</span></label>
+      <select id="motivo_baja">
+        <option value="">Seleccionar motivo...</option>
+        <option value="1">1 &mdash; Termino del contrato</option>
+        <option value="2">2 &mdash; Separacion voluntaria</option>
+        <option value="3">3 &mdash; Abandono de empleo</option>
+        <option value="4">4 &mdash; Defuncion</option>
+        <option value="5">5 &mdash; Clausura</option>
+        <option value="6">6 &mdash; Otra</option>
+        <option value="7">7 &mdash; Ausentismo</option>
+        <option value="8">8 &mdash; Rescision del contrato</option>
+        <option value="9">9 &mdash; Jubilacion</option>
+        <option value="10">10 &mdash; Pension</option>
+      </select>
+      <span class="emsg" id="e-motivo_baja">Selecciona el motivo de baja</span>
+    </div>
+
+    <!-- TIPO TRABAJADOR — alta y reingreso -->
+    <div class="f hide" id="f-tipo-trab">
+      <label>Tipo de trabajador <span class="r">*</span></label>
+      <select id="tipo_trab">
+        <option value="0">0 &mdash; Permanente (mayoria de los casos)</option>
+        <option value="1">1 &mdash; Eventual de la construccion</option>
+        <option value="2">2 &mdash; Eventual del campo</option>
+      </select>
+      <span class="hint">Permanente: relacion laboral indefinida. Eventual: obra determinada o campo.</span>
+    </div>
+
+    <!-- JORNADA — alta y reingreso -->
+    <div class="f hide" id="f-jornada">
+      <label>Tipo de jornada <span class="r">*</span></label>
+      <select id="jornada">
+        <option value="0">0 &mdash; Jornada normal (semana completa)</option>
+        <option value="1">1 &mdash; Semana reducida &mdash; 1 dia</option>
+        <option value="2">2 &mdash; Semana reducida &mdash; 2 dias</option>
+        <option value="3">3 &mdash; Semana reducida &mdash; 3 dias</option>
+        <option value="4">4 &mdash; Semana reducida &mdash; 4 dias</option>
+        <option value="5">5 &mdash; Semana reducida &mdash; 5 dias</option>
+        <option value="6">6 &mdash; Jornada reducida (menos de 8 hrs/dia)</option>
+      </select>
+    </div>
+
+    <!-- HORAS DIARIAS — solo jornada reducida -->
+    <div class="f hide" id="f-horas">
+      <label>Horas diarias trabajadas <span class="r">*</span></label>
+      <input type="number" id="horas_diarias" min="1" max="7" placeholder="Ej. 4">
+      <span class="hint">Solo para jornada reducida (menos de 8 hrs). El SDI se ajusta proporcionalmente.</span>
+      <span class="emsg" id="e-horas">Ingresa las horas (1-7)</span>
+    </div>
+
+    <!-- TIPO SALARIO — alta, reingreso y modificacion -->
+    <div class="f hide" id="f-tipo-sal">
+      <label>Tipo de salario <span class="r">*</span></label>
+      <div class="pills">
+        <input type="radio" name="tipo_sal" id="sal-fijo" value="0" class="pr" checked><label for="sal-fijo" class="pl">Fijo (0)</label>
+        <input type="radio" name="tipo_sal" id="sal-variable" value="1" class="pr"><label for="sal-variable" class="pl">Variable (1)</label>
+        <input type="radio" name="tipo_sal" id="sal-mixto" value="2" class="pr"><label for="sal-mixto" class="pl">Mixto (2)</label>
+      </div>
+      <span class="hint">Fijo: siempre el mismo. Variable: comisiones o destajo. Mixto: parte fija + variable.</span>
+    </div>
+
+    <!-- PERIODO PAGO — alta y reingreso (para calcular SDI) -->
+    <div class="f hide" id="f-periodo">
+      <label>Periodo de pago <span class="r">*</span></label>
+      <select id="periodo_pago">
+        <option value="">Seleccionar...</option>
+        <option value="semanal">Semanal</option>
+        <option value="quincenal">Quincenal</option>
+        <option value="mensual">Mensual</option>
+      </select>
+      <span class="emsg" id="e-periodo">Selecciona el periodo</span>
+    </div>
+
+    <!-- SALARIO POR PERIODO — alta y reingreso -->
+    <div class="f hide" id="f-salario-periodo">
+      <label>Salario bruto por periodo <span class="r">*</span></label>
+      <div class="pfx" id="pfx-sp">
+        <span class="pfxl">$</span>
+        <input type="number" id="salario_periodo" placeholder="8,000.00" min="0" step="0.01">
+      </div>
+      <span class="hint">Monto bruto antes de deducciones</span>
+      <span class="emsg" id="e-salario_periodo">Ingresa el salario</span>
+    </div>
+
+    <!-- DIAS VACACIONES — alta y reingreso (factor integración) -->
+    <div class="f hide" id="f-vacaciones">
+      <label>Dias de vacaciones segun contrato</label>
+      <select id="dias_vacaciones">
+        <option value="6">6 dias &mdash; minimo ley (1er ano)</option>
+        <option value="8">8 dias (2do ano)</option>
+        <option value="10">10 dias (3er ano)</option>
+        <option value="12">12 dias (4to ano)</option>
+        <option value="14">14 dias (5-9 anos)</option>
+        <option value="16">16 dias (10-14 anos)</option>
+        <option value="20">20 dias (15-19 anos)</option>
+      </select>
+      <span class="hint">Afecta el factor de integracion del SDI.</span>
+    </div>
+
+    <!-- SDI DIRECTO — solo modificacion de salario -->
+    <div class="f full hide" id="f-salario">
+      <label>Nuevo Salario Diario Integrado (SDI) <span class="r">*</span></label>
+      <div class="pfx" id="pfx-sdi">
+        <span class="pfxl">$</span>
+        <input type="number" id="salario" placeholder="350.00" min="0" step="0.01">
+      </div>
+      <span class="hint">Salario diario ya integrado. Incluye vacaciones, aguinaldo y prima vacacional. Minimo legal 2026: $278.80</span>
+      <span class="emsg" id="e-salario">SDI invalido</span>
+    </div>
+
+    <!-- DEPTO / PUESTO — alta y reingreso -->
+    <div class="f hide" id="f-depto">
+      <label>Departamento / Area <span class="opt">(opcional)</span></label>
+      <input type="text" id="departamento" placeholder="Ej. Produccion, Ventas, Administracion">
+    </div>
+    <div class="f hide" id="f-puesto">
+      <label>Puesto / Ocupacion <span class="opt">(opcional)</span></label>
+      <input type="text" id="puesto" placeholder="Descripcion del puesto">
+    </div>
+
+    <!-- NOTAS — todos -->
+    <div class="f full">
+      <label>Notas u observaciones <span class="opt">(opcional)</span></label>
+      <textarea id="notas" placeholder="Informacion adicional relevante para el contador..." rows="3"></textarea>
+    </div>
+
+  </div><!-- /fields4 -->
+
+  <!-- CALCULADORA SDI (alta y reingreso) -->
+  <div class="sdi-wrap" id="sdi-wrap">
+    <div class="sdi-head">&#9998; Calculo automatico del SDI</div>
+    <div class="sdi-grid">
+      <div class="sdi-row"><div class="sdi-lbl">Salario mensual equivalente</div><div class="sdi-val" id="sv-mensual">—</div></div>
+      <div class="sdi-row"><div class="sdi-lbl">Salario diario base (&divide; 30.4)</div><div class="sdi-val" id="sv-diario">—</div></div>
+      <div class="sdi-row"><div class="sdi-lbl">Dias de vacaciones</div><div class="sdi-val" id="sv-vac">6</div></div>
+      <div class="sdi-row"><div class="sdi-lbl">Factor de integracion</div><div class="sdi-val" id="sv-factor">1.0000</div></div>
+      <div class="sdi-row sdi-total">
+        <div class="sdi-lbl">SDI a registrar en el IMSS</div>
+        <div class="sdi-val" id="sv-sdi">Ingresa el salario arriba</div>
+      </div>
+    </div>
+    <div class="alerta-warn" id="sdi-min" style="margin-top:10px">&#9888; SDI inferior al minimo legal 2026 ($278.80). Se ajustara al minimo automaticamente.</div>
+    <div class="alerta-warn" id="sdi-max" style="margin-top:10px">&#9888; SDI supera el tope maximo IMSS ($6,970.00). Para el calculo de cuotas se aplicara el tope.</div>
+  </div>
+
+  <div class="nav">
+    <button class="btn btnb" id="btn-prev-4">&larr; Anterior</button>
+    <button class="btn btnp" id="btn-next-4">Revisar solicitud &rarr;</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PASO 5 — CONFIRMAR
+════════════════════════════════════ -->
+<div class="card" id="card5">
+  <div class="chead"><div class="cico">&#9989;</div><div><h2>Confirmar Movimiento</h2><p>Revisa que todos los datos sean correctos antes de enviar</p></div></div>
+  <div class="resgrid" id="resumen"></div>
+  <div class="checksec">
+    <input type="checkbox" id="acepto">
+    <label for="acepto">Confirmo que los datos son correctos y autorizo a Accepti Contadores S.C. a procesar este movimiento ante el IMSS. <a href="https://www.accepti.com.mx" target="_blank">Terminos de servicio</a>.</label>
+  </div>
+  <div class="nav">
+    <button class="btn btnb" id="btn-prev-5">&larr; Anterior</button>
+    <button class="btn btns" id="btn-enviar">&#128228; Enviar Solicitud</button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success" id="success">
+  <div class="sucico">&#9989;</div>
+  <h2>Solicitud Enviada</h2>
+  <p>Hemos recibido tu solicitud. Guarda tu numero de folio:</p>
+  <div class="folio" id="folio-num"></div>
+  <p>Accepti Contadores procesara el movimiento ante el IMSS y te notificara por WhatsApp y correo electronico.</p>
+  <div class="nextsteps">
+    <h3>Que sigue?</h3>
+    <ul>
+      <li><span class="dot">&rarr;</span> Accepti valida los datos y genera el archivo DISPMAG</li>
+      <li><span class="dot">&rarr;</span> El contador sube el archivo al portal IDSE del IMSS</li>
+      <li><span class="dot">&rarr;</span> El IMSS procesa el movimiento (1-2 dias habiles)</li>
+      <li><span class="dot">&rarr;</span> Recibes confirmacion por WhatsApp y correo</li>
+    </ul>
+  </div>
+  <p style="font-size:13px;color:var(--muted)">Dudas: WhatsApp <strong style="color:var(--navy)">(222) 864-2948</strong></p>
+</div>
+
+</div><!-- /wrapper -->
+<footer>&copy; 2025 <a href="https://www.accepti.com.mx" target="_blank">Accepti Contadores S.C.</a> &middot; Privada 14B Sur 6703, Col. Villa Universitaria, Puebla, Pue. &middot; (222) 755-0328</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   imss-v6.js — Accepti Contadores S.C.
+   Movimientos Afiliatorios IMSS: Alta, Baja, Reingreso, Mod.Salario
+   Novedades vs V5:
+   - Nombres en 3 campos separados (DISPMAG requiere campos distintos)
+   - Validacion NSS con algoritmo Luhn IMSS
+   - Validacion CURP con regex oficial + auto-deteccion sexo
+   - Calculadora SDI automatica con factor de integracion
+   - Campos nuevos: tipo_trabajador, tipo_jornada, periodo_pago,
+     horas_diarias, dias_vacaciones, cp, fecha_nacimiento, tel_patron
+   - Payload enriquecido con fecha_dispmag (ddmmaaaa) para el Worker
+   - Alertas: extemporaneo, SDI min/max
+   ══════════════════════════════════════════════════════════════ */
+
+var WEBHOOK = 'https://hook.us2.make.com/TU_WEBHOOK_IMSS'; // ← Reemplazar
+
+/* Salarios mínimos 2026 */
+var SMD_2026 = 278.80;
+var TOPE_MAX = SMD_2026 * 25; /* $6,970.00 */
+
+var paso = 1;
+var movimiento = '';
+var sdiCalculado = 0;
+
+/* ── CONFIGURACIÓN DE CAMPOS POR MOVIMIENTO ── */
+var CFG = {
+  alta: {
+    p3: ['f-ap-paterno','f-ap-materno','f-nombres','f-curp','f-rfc','f-nacimiento','f-sexo','f-umf','f-cp'],
+    p4: ['f-tipo-trab','f-jornada','f-tipo-sal','f-periodo','f-salario-periodo','f-vacaciones','f-depto','f-puesto'],
+    calc: true
+  },
+  reingreso: {
+    p3: ['f-ap-paterno','f-ap-materno','f-nombres','f-curp','f-rfc','f-sexo','f-umf'],
+    p4: ['f-tipo-trab','f-jornada','f-tipo-sal','f-periodo','f-salario-periodo','f-vacaciones','f-depto','f-puesto'],
+    calc: true
+  },
+  baja: {
+    p3: ['f-nombre-simple'],
+    p4: ['f-motivo-baja'],
+    calc: false
+  },
+  salario: {
+    p3: ['f-nombre-simple'],
+    p4: ['f-tipo-sal','f-salario'],
+    calc: false
+  }
+};
+
+var PLAZO = {
+  alta:      'Plazo legal: 5 dias habiles desde el inicio de labores del trabajador.',
+  reingreso: 'Plazo legal: 5 dias habiles desde el reingreso a actividades.',
+  baja:      'Plazo legal: 5 dias habiles desde la terminacion de la relacion laboral.',
+  salario:   'Salario fijo: 5 dias habiles. Salario variable: primeros 5 dias de meses nones.'
+};
+
+var HINT_FECHA = {
+  alta:      'Fecha de inicio de labores del trabajador',
+  reingreso: 'Fecha de reingreso a actividades',
+  baja:      'Ultimo dia laborado (por el que se pago salario)',
+  salario:   'Fecha en que entra en vigor el nuevo salario'
+};
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  /* Logo fallback */
+  var img = document.getElementById('logo-img');
+  if (img) img.onerror = function() {
+    img.style.display = 'none';
+    document.getElementById('logo-fallback').style.display = 'grid';
+  };
+
+  /* Selección de movimiento */
+  document.querySelector('.mov-grid').addEventListener('click', function(e) {
+    var card = e.target.closest('.mov-card');
+    if (!card) return;
+    selMov(card.id.replace('mov-',''));
+  });
+
+  /* Navegación */
+  document.getElementById('btn-next-1').addEventListener('click', function(){ goNext(1); });
+  document.getElementById('btn-next-2').addEventListener('click', function(){ goNext(2); });
+  document.getElementById('btn-next-3').addEventListener('click', function(){ goNext(3); });
+  document.getElementById('btn-next-4').addEventListener('click', function(){ goNext(4); });
+  document.getElementById('btn-prev-2').addEventListener('click', function(){ goPrev(2); });
+  document.getElementById('btn-prev-3').addEventListener('click', function(){ goPrev(3); });
+  document.getElementById('btn-prev-4').addEventListener('click', function(){ goPrev(4); });
+  document.getElementById('btn-prev-5').addEventListener('click', function(){ goPrev(5); });
+  document.getElementById('btn-enviar').addEventListener('click', enviar);
+
+  /* Validaciones en tiempo real */
+  bind('reg_patronal', function(){ this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); validarRP(); });
+  bind('rfc_patron',   function(){ this.value=this.value.toUpperCase(); validarRFCPatron(); });
+  bind('tel_patron',   function(){ this.value=this.value.replace(/\D/g,''); clrE('tel_patron'); });
+  bind('email',        function(){ clrE('email'); });
+  bind('nss',          function(){ this.value=this.value.replace(/\D/g,''); validarNSS(); });
+  bind('ap_paterno',   function(){ this.value=normNombre(this.value); clrE('ap_paterno'); });
+  bind('ap_materno',   function(){ this.value=normNombre(this.value); });
+  bind('nombres',      function(){ this.value=normNombre(this.value); clrE('nombres'); });
+  bind('curp',         function(){ this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); validarCURP(); });
+  bind('rfc',          function(){ this.value=this.value.toUpperCase(); validarRFCTrab(); });
+  bind('fecha_mov',    function(){ clrE('fecha_mov'); checkFechaExtemp(); });
+  bind('motivo_baja',  function(){ clrE('motivo_baja'); }, 'change');
+  bind('jornada',      function(){ toggleHoras(); calcSDI(); }, 'change');
+  bind('periodo_pago', function(){ calcSDI(); }, 'change');
+  bind('salario_periodo', function(){ calcSDI(); });
+  bind('dias_vacaciones', function(){ calcSDI(); }, 'change');
+  bind('horas_diarias',   function(){ calcSDI(); });
+
+  /* Defaults */
+  document.getElementById('umf').value = '000';
+  document.getElementById('dias_vacaciones').value = '6';
+  var hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha_mov').max = hoy;
+  document.getElementById('fecha_mov').value = hoy;
+});
+
+function bind(id, fn, evt) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener(evt||'input', fn);
+}
+
+/* ── SELECCIÓN MOVIMIENTO ── */
+function selMov(tipo) {
+  movimiento = tipo;
+  ['alta','reingreso','baja','salario'].forEach(function(t) {
+    document.getElementById('mov-'+t).classList.remove('selected');
+    document.getElementById('badge-'+t).textContent = '';
+  });
+  document.getElementById('mov-'+tipo).classList.add('selected');
+  document.getElementById('badge-'+tipo).textContent = '\u2713';
+  document.getElementById('plazo-txt').textContent = PLAZO[tipo]||'';
+  document.getElementById('plazo-alert').classList.add('show');
+}
+
+/* ── APLICAR CAMPOS ── */
+function aplicarCampos() {
+  var cfg = CFG[movimiento]; if (!cfg) return;
+
+  /* Ocultar todo */
+  var todosP3 = ['f-ap-paterno','f-ap-materno','f-nombres','f-nombre-simple',
+                 'f-curp','f-rfc','f-nacimiento','f-sexo','f-umf','f-cp'];
+  var todosP4 = ['f-motivo-baja','f-tipo-trab','f-jornada','f-horas',
+                 'f-tipo-sal','f-periodo','f-salario-periodo','f-vacaciones',
+                 'f-salario','f-depto','f-puesto'];
+  todosP3.forEach(function(id){ ocultar(id); });
+  todosP4.forEach(function(id){ ocultar(id); });
+
+  /* Mostrar los del movimiento */
+  cfg.p3.forEach(function(id){ mostrar(id); });
+  cfg.p4.forEach(function(id){ mostrar(id); });
+
+  /* Calculadora SDI */
+  document.getElementById('sdi-wrap').classList.toggle('show', cfg.calc);
+
+  /* Alerta nombre exacto */
+  var an = document.getElementById('alerta-nombre');
+  an.classList.toggle('show', movimiento==='alta'||movimiento==='reingreso');
+
+  /* Títulos dinámicos */
+  var t3={alta:'Datos del Trabajador (Alta)',reingreso:'Datos del Trabajador (Reingreso)',baja:'Identificacion del Trabajador',salario:'Identificacion del Trabajador'};
+  var s3={alta:'Informacion completa para el alta en el IMSS',reingreso:'Datos del trabajador que regresa a laborar',baja:'Solo se requieren datos basicos para la baja',salario:'Identifica al trabajador cuyo salario se modifica'};
+  var t4={alta:'Datos Laborales del Alta',reingreso:'Datos Laborales del Reingreso',baja:'Datos de la Baja',salario:'Nueva Informacion Salarial'};
+  var s4={alta:'Tipo de contrato, jornada y calculo automatico del SDI',reingreso:'Tipo de contrato, jornada y calculo automatico del SDI',baja:'Motivo y fecha de la separacion laboral',salario:'Ingresa el nuevo SDI del trabajador'};
+
+  document.getElementById('card3-title').textContent = t3[movimiento]||'Datos del Trabajador';
+  document.getElementById('card3-sub').textContent   = s3[movimiento]||'';
+  document.getElementById('card4-title').textContent = t4[movimiento]||'Datos Laborales';
+  document.getElementById('card4-sub').textContent   = s4[movimiento]||'';
+  document.getElementById('hint-fecha').textContent  = HINT_FECHA[movimiento]||'Fecha del movimiento';
+}
+
+/* ── NAVEGACIÓN ── */
+function goNext(from) {
+  if (!validar(from)) return;
+  if (from===1) aplicarCampos();
+  paso = from+1;
+  if (paso===5) armarResumen();
+  actualizarUI();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goPrev(from) {
+  paso = from-1;
+  actualizarUI();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function actualizarUI() {
+  for (var i=1;i<=5;i++) {
+    document.getElementById('card'+i).classList.toggle('active', i===paso);
+    var t=document.getElementById('st'+i), n=document.getElementById('sn'+i);
+    t.classList.remove('active','done');
+    if (i===paso)      { t.classList.add('active'); n.textContent=i; }
+    else if (i<paso)   { t.classList.add('done');   n.textContent='\u2713'; }
+    else               { n.textContent=i; }
+  }
+}
+
+/* ── VALIDACIONES POR PASO ── */
+function validar(p) {
+  var ok=true;
+  if (p===1) {
+    if (!movimiento) { alert('Selecciona el tipo de movimiento para continuar.'); return false; }
+  }
+  if (p===2) {
+    var rp=g('reg_patronal').trim();
+    if (!rp||rp.length<10||rp.length>11) { marcarErr('reg_patronal'); ok=false; } else clrE('reg_patronal');
+    if (g('nombre_patron').trim().length<2) { marcarErr('nombre_patron'); ok=false; } else clrE('nombre_patron');
+    var tel=g('tel_patron').replace(/\D/g,'');
+    if (!tel||tel.length!==10) { marcarErr('tel_patron'); ok=false; } else clrE('tel_patron');
+    var em=g('email');
+    if (!em||em.indexOf('@')<1||em.lastIndexOf('.')<em.indexOf('@')) { marcarErr('email'); ok=false; } else clrE('email');
+  }
+  if (p===3) {
+    /* NSS — todos */
+    var nss=g('nss').replace(/\s/g,'');
+    if (nss.length!==11||!luhnNSS(nss)) {
+      document.getElementById('e-nss').textContent = nss.length!==11 ? 'El NSS debe tener exactamente 11 digitos' : 'El digito verificador del NSS es incorrecto';
+      marcarErr('nss'); ok=false;
+    } else clrE('nss');
+    /* Apellido paterno */
+    if (!esOc('f-ap-paterno')&&g('ap_paterno').trim().length<1) { marcarErr('ap_paterno'); ok=false; } else clrE('ap_paterno');
+    /* Nombre(s) */
+    if (!esOc('f-nombres')&&g('nombres').trim().length<1) { marcarErr('nombres'); ok=false; } else clrE('nombres');
+    /* CURP */
+    if (!esOc('f-curp')&&!fmtCURP(g('curp'))) { marcarErr('curp'); ok=false; } else clrE('curp');
+    /* Sexo */
+    if (!esOc('f-sexo')&&!document.querySelector('input[name=sexo]:checked')) { marcarErr('sexo'); ok=false; }
+  }
+  if (p===4) {
+    if (!g('fecha_mov')) { marcarErr('fecha_mov'); ok=false; } else clrE('fecha_mov');
+    if (!esOc('f-motivo-baja')&&!g('motivo_baja')) { marcarErr('motivo_baja'); ok=false; } else clrE('motivo_baja');
+    if (!esOc('f-periodo')&&!g('periodo_pago')) { marcarErr('periodo'); ok=false; } else clrE('periodo');
+    if (!esOc('f-salario-periodo')) {
+      var sp=parseFloat(g('salario_periodo'));
+      if (!sp||sp<=0) { document.getElementById('pfx-sp').classList.add('err-pfx'); marcarErr('salario_periodo'); ok=false; }
+      else { document.getElementById('pfx-sp').classList.remove('err-pfx'); clrE('salario_periodo'); }
+    }
+    if (!esOc('f-salario')) {
+      var sdi=parseFloat(g('salario'));
+      if (!sdi||sdi<=0) { document.getElementById('pfx-sdi').classList.add('err-pfx'); marcarErr('salario'); ok=false; }
+      else { document.getElementById('pfx-sdi').classList.remove('err-pfx'); clrE('salario'); }
+    }
+    if (g('jornada')==='6') {
+      var h=parseInt(g('horas_diarias'));
+      if (!h||h<1||h>7) { marcarErr('horas'); ok=false; } else clrE('horas');
+    }
+  }
+  if (p===5) {
+    if (!document.getElementById('acepto').checked) { alert('Debes aceptar los terminos para continuar.'); return false; }
+  }
+  return ok;
+}
+
+/* ── VALIDACIÓN NSS — Luhn IMSS ── */
+function luhnNSS(nss) {
+  if (!/^\d{11}$/.test(nss)) return false;
+  var d=nss.split('').map(Number), sum=0;
+  for (var i=0;i<10;i++) { var x=d[i]; if(i%2===0){x*=2;if(x>9)x-=9;} sum+=x; }
+  return ((10-(sum%10))%10)===d[10];
+}
+
+function validarNSS() {
+  var v=g('nss'), vi=document.getElementById('vi-nss'), el=document.getElementById('nss');
+  if (v.length<11) { vi.style.display='none'; el.classList.remove('ok','err'); return; }
+  var valid = v.length===11 && luhnNSS(v);
+  vi.textContent=valid?'✓':'✗'; vi.style.display='block';
+  vi.style.color=valid?'var(--green)':'var(--red)';
+  el.classList.toggle('ok',valid); el.classList.toggle('err',!valid);
+  if (valid) clrE('nss');
+}
+
+/* ── VALIDACIÓN CURP ── */
+function fmtCURP(c) {
+  return /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM]{1}(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d]{1}\d{1}$/.test(c);
+}
+
+function validarCURP() {
+  var v=g('curp'), vi=document.getElementById('vi-curp'), el=document.getElementById('curp');
+  if (v.length<18) { vi.style.display='none'; el.classList.remove('ok','err'); return; }
+  var valid=fmtCURP(v);
+  vi.textContent=valid?'✓':'✗'; vi.style.display='block';
+  vi.style.color=valid?'var(--green)':'var(--red)';
+  el.classList.toggle('ok',valid); el.classList.toggle('err',!valid);
+  if (valid) {
+    clrE('curp');
+    /* Auto-detectar sexo: posición 10 del CURP (H=Hombre, M=Mujer) */
+    if (v[9]==='H') document.getElementById('masc').checked=true;
+    else if (v[9]==='M') document.getElementById('fem').checked=true;
+  }
+}
+
+/* ── VALIDACIÓN RFC ── */
+function validarRFC(id, viId) {
+  var v=g(id), vi=document.getElementById(viId), el=document.getElementById(id);
+  if (v.length<12) { vi.style.display='none'; el.classList.remove('ok','err'); return; }
+  var valid=/^([A-ZÑ&]{3,4})\d{6}[A-Z\d]{3}$/.test(v);
+  vi.textContent=valid?'✓':'✗'; vi.style.display='block';
+  vi.style.color=valid?'var(--green)':'var(--red)';
+  el.classList.toggle('ok',valid); el.classList.toggle('err',!valid);
+}
+function validarRFCPatron() { validarRFC('rfc_patron','vi-rfc'); }
+function validarRFCTrab()   { validarRFC('rfc','vi-rfc-trab'); }
+
+/* ── VALIDACIÓN REGISTRO PATRONAL ── */
+function validarRP() {
+  var v=g('reg_patronal').trim(), vi=document.getElementById('vi-rp'), el=document.getElementById('reg_patronal');
+  if (v.length<10) { vi.style.display='none'; el.classList.remove('ok','err'); return; }
+  var valid=v.length>=10&&v.length<=11;
+  vi.textContent=valid?'✓':'✗'; vi.style.display='block';
+  vi.style.color=valid?'var(--green)':'var(--red)';
+  el.classList.toggle('ok',valid); el.classList.toggle('err',!valid);
+  if (valid) clrE('reg_patronal');
+}
+
+/* ── JORNADA REDUCIDA — toggle horas ── */
+function toggleHoras() {
+  var j=g('jornada');
+  if (j==='6') mostrar('f-horas'); else ocultar('f-horas');
+}
+
+/* ── ALERTA FECHA EXTEMPORÁNEA ── */
+function checkFechaExtemp() {
+  var fm=g('fecha_mov'); if (!fm) return;
+  var sel=new Date(fm+'T00:00:00'), hoy=new Date();
+  var diff=Math.floor((hoy-sel)/(1000*60*60*24));
+  var a=document.getElementById('alerta-extemp');
+  a.classList.toggle('show', diff>7);
+}
+
+/* ── NORMALIZAR NOMBRE (mayúsculas, sin acentos) ── */
+function normNombre(s) {
+  return s.toUpperCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^A-ZÑ\s]/g,'')
+    .replace(/\s{2,}/g,' ');
+}
+
+/* ── CALCULADORA SDI ── */
+function calcSDI() {
+  var sp=parseFloat(g('salario_periodo'));
+  var periodo=g('periodo_pago');
+  var vac=parseInt(g('dias_vacaciones')||'6');
+  var jornada=g('jornada');
+  var horas=parseFloat(g('horas_diarias')||'8');
+
+  if (!sp||sp<=0||!periodo) {
+    document.getElementById('sv-sdi').textContent='Ingresa el salario arriba';
+    sdiCalculado=0; return;
+  }
+
+  /* Mensual */
+  var mensual;
+  if (periodo==='semanal') mensual=sp*(365/7)/12;
+  else if (periodo==='quincenal') mensual=sp*2;
+  else mensual=sp;
+
+  /* Diario base */
+  var diario=mensual/30.4;
+
+  /* Ajuste jornada reducida */
+  if (jornada==='6'&&horas>0&&horas<8) diario=diario*(horas/8);
+
+  /* Factor de integración: aguinaldo(15d) + vacaciones * prima(25%) */
+  var factor=1+(15/365)+(vac*0.25/365);
+  var sdi=diario*factor;
+  sdiCalculado=sdi;
+
+  /* Alertas min/max */
+  toggleAlerta('sdi-min', sdi<SMD_2026);
+  toggleAlerta('sdi-max', sdi>TOPE_MAX);
+
+  /* Mostrar */
+  document.getElementById('sv-mensual').textContent='$'+mensual.toFixed(2);
+  document.getElementById('sv-diario').textContent='$'+diario.toFixed(2);
+  document.getElementById('sv-vac').textContent=vac+' dias';
+  document.getElementById('sv-factor').textContent=factor.toFixed(4);
+  document.getElementById('sv-sdi').textContent='$'+sdi.toFixed(2);
+}
+
+/* ── ARMAR RESUMEN ── */
+function armarResumen() {
+  var tsal=document.querySelector('input[name=tipo_sal]:checked');
+  var sexoEl=document.querySelector('input[name=sexo]:checked');
+  var nMov={alta:'Alta de Trabajador',reingreso:'Reingreso',baja:'Baja de Trabajador',salario:'Modificacion de Salario'};
+  var nTsal=['Fijo','Variable','Mixto'];
+  var nJorn={0:'Normal',1:'1 dia',2:'2 dias',3:'3 dias',4:'4 dias',5:'5 dias',6:'Jornada reducida'};
+  var nTtrab={0:'Permanente',1:'Eventual construccion',2:'Eventual campo'};
+
+  /* SDI final */
+  var sdiMostrar='—';
+  if (movimiento==='salario'&&g('salario')) sdiMostrar='$'+parseFloat(g('salario')).toFixed(2);
+  else if (sdiCalculado>0) sdiMostrar='$'+sdiCalculado.toFixed(2);
+
+  var filas=[
+    {l:'Tipo de movimiento',    v:nMov[movimiento]||movimiento, big:true, full:true},
+    {l:'Registro Patronal',     v:g('reg_patronal')},
+    {l:'Patron / Empresa',      v:g('nombre_patron')},
+    {l:'RFC Patron',            v:g('rfc_patron')||'—'},
+    {l:'WhatsApp Patron',       v:g('tel_patron')},
+    {l:'Correo',                v:g('email')},
+    {l:'NSS Trabajador',        v:g('nss'), mono:true},
+    {l:'Apellido Paterno',      v:g('ap_paterno')||'—'},
+    {l:'Apellido Materno',      v:g('ap_materno')||'—'},
+    {l:'Nombre(s)',             v:g('nombres')||g('nombre_simple')||'—'},
+    {l:'CURP',                  v:g('curp')||'—', mono:true},
+    {l:'RFC Trabajador',        v:g('rfc')||'—'},
+    {l:'Sexo',                  v:sexoEl?(sexoEl.value==='H'?'Hombre':'Mujer'):'—'},
+    {l:'UMF',                   v:g('umf')||'000'},
+    {l:'CP Trabajador',         v:g('cp')||'—'},
+    {l:'Fecha del movimiento',  v:g('fecha_mov'), full:true},
+    {l:'Motivo de baja',        v:g('motivo_baja')||'—'},
+    {l:'Tipo de trabajador',    v:nTtrab[g('tipo_trab')]||'Permanente'},
+    {l:'Tipo de jornada',       v:nJorn[g('jornada')]||'Normal'},
+    {l:'Tipo de salario',       v:tsal?nTsal[tsal.value]:'—'},
+    {l:'Periodo de pago',       v:g('periodo_pago')||'—'},
+    {l:'SDI Calculado',         v:sdiMostrar, big:true},
+  ];
+
+  var html='';
+  filas.forEach(function(d) {
+    if (!d.v||d.v==='—') return;
+    html+='<div class="ri'+(d.full?' full':'')+'"><div class="ril">'+d.l+'</div>';
+    html+='<div class="riv'+(d.big?' mov':'')+(d.mono?' mono':'')+'">'+d.v+'</div></div>';
+  });
+  document.getElementById('resumen').innerHTML=html;
+}
+
+/* ── ENVIAR ── */
+function enviar() {
+  if (!document.getElementById('acepto').checked) { alert('Debes aceptar los terminos.'); return; }
+
+  var folio='IMSS-'+new Date().getFullYear()+'-'+(Math.floor(Math.random()*90000)+10000);
+  var tsal=document.querySelector('input[name=tipo_sal]:checked');
+  var sexoEl=document.querySelector('input[name=sexo]:checked');
+
+  /* SDI final */
+  var sdiEnvio='';
+  if (movimiento==='salario') sdiEnvio=g('salario')?parseFloat(g('salario')).toFixed(2):'';
+  else if (sdiCalculado>0) sdiEnvio=sdiCalculado.toFixed(2);
+
+  /* Fecha DISPMAG (ddmmaaaa) */
+  var fm=g('fecha_mov'), fechaDISPMAG='';
+  if (fm) { var pts=fm.split('-'); if(pts.length===3) fechaDISPMAG=pts[2]+pts[1]+pts[0]; }
+
+  var data={
+    folio:folio, timestamp:new Date().toISOString(),
+    tipo_movimiento:movimiento,
+    patron:{
+      registro_patronal:g('reg_patronal').toUpperCase(),
+      nombre:g('nombre_patron').toUpperCase(),
+      rfc:g('rfc_patron').toUpperCase(),
+      telefono:g('tel_patron'),
+      email:g('email')
+    },
+    trabajador:{
+      nss:g('nss'),
+      ap_paterno:g('ap_paterno'),
+      ap_materno:g('ap_materno'),
+      nombres:g('nombres'),
+      nombre_simple:g('nombre_simple'),
+      curp:g('curp'),
+      rfc:g('rfc'),
+      fecha_nacimiento:g('nacimiento'),
+      sexo:sexoEl?sexoEl.value:'',
+      umf:g('umf')||'000',
+      cp:g('cp')
+    },
+    movimiento:{
+      fecha:g('fecha_mov'),
+      fecha_dispmag:fechaDISPMAG,
+      motivo_baja:g('motivo_baja'),
+      tipo_trabajador:g('tipo_trab')||'0',
+      tipo_jornada:g('jornada')||'0',
+      horas_diarias:g('horas_diarias')||'8',
+      tipo_salario:tsal?tsal.value:'0',
+      periodo_pago:g('periodo_pago'),
+      salario_periodo:g('salario_periodo'),
+      dias_vacaciones:g('dias_vacaciones')||'6',
+      sdi:sdiEnvio,
+      departamento:g('departamento'),
+      puesto:g('puesto'),
+      notas:g('notas')
+    }
+  };
+
+  fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .catch(function(){ console.warn('Webhook pendiente de configurar en WEBHOOK variable'); });
+
+  for(var i=1;i<=5;i++) document.getElementById('card'+i).classList.remove('active');
+  document.getElementById('success').classList.add('active');
+  document.getElementById('folio-num').textContent=folio;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── HELPERS ── */
+function g(id){ var el=document.getElementById(id); return el?el.value.trim():''; }
+function mostrar(id){ var el=document.getElementById(id); if(el) el.classList.remove('hide'); }
+function ocultar(id){ var el=document.getElementById(id); if(el) el.classList.add('hide'); }
+function esOc(id){ var el=document.getElementById(id); return !el||el.classList.contains('hide'); }
+function marcarErr(id){
+  var el=document.getElementById(id); if(el) el.classList.add('err');
+  var em=document.getElementById('e-'+id); if(em) em.style.display='block';
+}
+function clrE(id){
+  var el=document.getElementById(id); if(el) el.classList.remove('err');
+  var em=document.getElementById('e-'+id); if(em) em.style.display='none';
+}
+function toggleAlerta(id, mostrarla){
+  var el=document.getElementById(id); if(!el) return;
+  el.classList.toggle('show', mostrarla);
+}
+</script>
+</body>
+</html>
